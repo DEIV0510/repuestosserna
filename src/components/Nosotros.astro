@@ -1,0 +1,167 @@
+---
+// Identidad: el logo completo protagonista sobre grafito (como fue diseñado), dentro de un
+// marco de plano técnico con esquinas de registro; el mensaje de marca al lado y una foto
+// real de las estanterías del local. Sin cifras ni años de experiencia inventados.
+import Logo from './Logo.astro';
+import Foto from './Foto.astro';
+import { DIRECCION } from '@/lib/contacto';
+
+const FICHA = [
+  { clave: 'Especialidades', valor: 'Suspensión · Frenos · Motor' },
+  { clave: 'Ubicación', valor: `${DIRECCION.sector}, ${DIRECCION.ciudad}, ${DIRECCION.departamento}` },
+  { clave: 'Atención', valor: 'En el local y por WhatsApp' },
+];
+---
+
+<section id="nosotros" class="seccion nos sup-oscuro" aria-labelledby="nos-titulo">
+  <div class="contenedor nos__grid">
+    <div class="nos__placa revela">
+      <span class="nos__registro nos__registro--a" aria-hidden="true"></span>
+      <span class="nos__registro nos__registro--b" aria-hidden="true"></span>
+      <Logo version="completo" ancho={440} sizes="(min-width: 1024px) 440px, 78vw" class="nos__logo" />
+      <span class="nos__cota" aria-hidden="true"></span>
+    </div>
+
+    <div class="nos__texto">
+      <p class="rotulo revela"><span class="trazo"></span>Nosotros</p>
+      <h2 id="nos-titulo" class="titulo titulo--2 nos__titulo revela">Calidad que se siente en cada recorrido.</h2>
+      <p class="entrada revela" style="--orden:1">
+        En Serna Repuestos encuentras un punto de atención para consultar repuestos de suspensión, frenos y motor. Queremos
+        ayudarte a identificar la opción adecuada para tu vehículo.
+      </p>
+      <dl class="nos__ficha revela" style="--orden:2">
+        {
+          FICHA.map((f) => (
+            <div>
+              <dt>{f.clave}</dt>
+              <dd>{f.valor}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <figure class="nos__figura revela" style="--orden:1">
+      <Foto id="local-estanteria" class="nos__foto" sizes="(min-width: 1024px) 22vw, (min-width: 600px) 44vw, 100vw" />
+      <figcaption>Estanterías de nuestro local</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .nos {
+    background: var(--grafito);
+    border-top: 1px solid var(--acero);
+  }
+  .nos__grid {
+    display: grid;
+    gap: var(--s-7);
+  }
+
+  /* Placa del logo: fondo negro (el del original) con cuadrícula técnica muy tenue. */
+  .nos__placa {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: clamp(280px, 52vw, 520px);
+    padding: clamp(32px, 7vw, 72px);
+    background:
+      linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
+      linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
+      #050607;
+    border: 1px solid var(--acero);
+  }
+  .nos__logo {
+    width: min(100%, 440px);
+  }
+  .nos__registro {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: solid var(--azul-vivo);
+  }
+  .nos__registro--a {
+    top: -1px;
+    left: -1px;
+    border-width: 2px 0 0 2px;
+  }
+  .nos__registro--b {
+    right: -1px;
+    bottom: -1px;
+    border-width: 0 2px 2px 0;
+  }
+  /* Cota: línea de medida bajo el logo, como en un plano. */
+  .nos__cota {
+    position: absolute;
+    left: 15%;
+    right: 15%;
+    bottom: clamp(16px, 3vw, 28px);
+    height: 9px;
+    border-inline: 1px solid var(--acero);
+    background: linear-gradient(var(--acero), var(--acero)) center / 100% 1px no-repeat;
+  }
+
+  .nos__texto {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+  }
+  .nos__titulo {
+    max-width: 14ch;
+  }
+  .nos__ficha {
+    margin-top: var(--s-4);
+    border-top: 1px solid var(--acero);
+  }
+  .nos__ficha div {
+    display: grid;
+    grid-template-columns: minmax(110px, 0.6fr) 1fr;
+    gap: var(--s-4);
+    padding: 14px 0;
+    border-bottom: 1px solid var(--acero);
+    font-size: var(--t-sm);
+  }
+  .nos__ficha dt {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--titanio);
+    padding-top: 2px;
+  }
+  .nos__ficha dd {
+    color: var(--plata);
+  }
+
+  .nos__figura {
+    max-width: 360px;
+  }
+  .nos__foto {
+    aspect-ratio: 9 / 10;
+  }
+  .nos__figura figcaption {
+    margin-top: var(--s-3);
+    font-size: var(--t-sm);
+    color: var(--titanio);
+  }
+
+  @media (min-width: 1024px) {
+    .nos__grid {
+      grid-template-columns: 5fr 4fr 3fr;
+      gap: clamp(32px, 4vw, 64px);
+      align-items: start;
+    }
+    .nos__figura {
+      max-width: none;
+      margin-top: 30%;
+    }
+  }
+  @media (min-width: 600px) and (max-width: 1023.98px) {
+    .nos__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .nos__placa {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

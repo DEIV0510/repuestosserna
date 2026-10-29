@@ -1,0 +1,242 @@
+---
+// Ubicación y contacto. El mapa de Google no se carga al abrir la página: se muestra la
+// fachada real del local y el mapa se inserta solo si la persona lo pide (menos peso, sin
+// rastreo de terceros por defecto). «Cómo llegar» abre Google Maps con la dirección.
+// Facebook: sin URL confirmada, se muestra el nombre sin enlace (ver lib/contacto.ts).
+import Foto from './Foto.astro';
+import Icono from './Icono.astro';
+import { WA } from '@/lib/whatsapp';
+import { DIRECCION, FACEBOOK, INSTAGRAM, MAPS_EMBED, MAPS_INDICACIONES, MARCA, WHATSAPP_VISIBLE } from '@/lib/contacto';
+---
+
+<section id="contacto" class="seccion con sup-claro" aria-labelledby="con-titulo">
+  <div class="contenedor con__grid">
+    <div class="con__datos">
+      <p class="rotulo revela"><span class="trazo"></span>Ubicación y contacto</p>
+      <h2 id="con-titulo" class="titulo titulo--2 revela">Visítanos o escríbenos</h2>
+
+      <address class="con__direccion revela" style="--orden:1">
+        <strong class="con__nombre">{MARCA.nombre}</strong>
+        <span class="con__calle">{DIRECCION.calle}</span>
+        <span>{DIRECCION.sector}</span>
+        <span>{DIRECCION.ciudad}, {DIRECCION.departamento}, {DIRECCION.pais}.</span>
+      </address>
+
+      <dl class="con__canales revela" style="--orden:2">
+        <div>
+          <dt>WhatsApp</dt>
+          <dd><a href={WA.general} target="_blank" rel="noopener" data-cta="contacto-numero" class="num">{WHATSAPP_VISIBLE}</a></dd>
+        </div>
+        <div>
+          <dt>Instagram</dt>
+          <dd><a href={INSTAGRAM.url} target="_blank" rel="noopener" data-cta="instagram">{INSTAGRAM.usuario}</a></dd>
+        </div>
+        <div>
+          <dt>Facebook</dt>
+          <dd>
+            {
+              FACEBOOK.url ? (
+                <a href={FACEBOOK.url} target="_blank" rel="noopener" data-cta="facebook">
+                  {FACEBOOK.nombre}
+                </a>
+              ) : (
+                <span>{FACEBOOK.nombre}</span>
+              )
+            }
+          </dd>
+        </div>
+      </dl>
+
+      <div class="con__acciones revela" style="--orden:3">
+        <a class="btn btn--primario" href={WA.general} target="_blank" rel="noopener" data-cta="contacto">
+          <Icono nombre="whatsapp" />
+          Abrir WhatsApp
+        </a>
+        <a class="btn btn--secundario" href={MAPS_INDICACIONES} target="_blank" rel="noopener" data-cta="mapa-indicaciones">
+          <Icono nombre="ruta" />
+          Cómo llegar
+        </a>
+        <a class="btn btn--secundario" href={INSTAGRAM.url} target="_blank" rel="noopener" data-cta="instagram-boton">
+          <Icono nombre="instagram" />
+          Instagram
+        </a>
+        {
+          FACEBOOK.url && (
+            <a class="btn btn--secundario" href={FACEBOOK.url} target="_blank" rel="noopener" data-cta="facebook-boton">
+              <Icono nombre="facebook" />
+              Facebook
+            </a>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="con__mapa revela" data-mapa data-src={MAPS_EMBED} style="--orden:1">
+      <Foto id="local-fachada" class="con__fachada" sizes="(min-width: 1024px) 40vw, 100vw" />
+      <div class="con__mapa-capa">
+        <p class="con__mapa-texto">
+          <Icono nombre="pin" />
+          <span>Fachada del local · {DIRECCION.sector}</span>
+        </p>
+        <button class="btn btn--primario con__mapa-boton" type="button" data-mapa-cargar>
+          <Icono nombre="mapa" />
+          Ver mapa aquí
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .con__grid {
+    display: grid;
+    gap: var(--s-7);
+  }
+  .con__datos {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+  }
+  .con__direccion {
+    display: grid;
+    gap: 2px;
+    margin-top: var(--s-4);
+    padding-left: var(--s-4);
+    border-left: 3px solid var(--azul);
+    font-style: normal;
+    font-size: var(--t-md);
+    color: var(--tinta-2);
+  }
+  .con__nombre {
+    font-family: var(--font-display);
+    font-stretch: 106%;
+    font-weight: 800;
+    font-size: var(--t-sm);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--tinta);
+    margin-bottom: 6px;
+  }
+  .con__calle {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 106%;
+    font-size: var(--t-xl);
+    line-height: 1.1;
+    color: var(--tinta);
+  }
+  .con__canales {
+    margin-top: var(--s-4);
+    border-top: 1px solid var(--linea);
+  }
+  .con__canales div {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: var(--s-4);
+    align-items: center;
+    min-height: 52px;
+    border-bottom: 1px solid var(--linea);
+  }
+  .con__canales dt {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tinta-2);
+  }
+  .con__canales dd {
+    font-weight: 600;
+  }
+  .con__canales a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--tinta);
+    text-decoration: underline;
+    text-decoration-color: var(--azul);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
+  }
+  .con__canales a:hover {
+    color: var(--azul);
+  }
+  .con__acciones {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-4);
+  }
+  @media (min-width: 560px) {
+    .con__acciones {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+
+  /* Mapa diferido: la fachada real mientras tanto */
+  .con__mapa {
+    position: relative;
+    min-height: 420px;
+    background: var(--grafito);
+    overflow: hidden;
+  }
+  .con__fachada {
+    position: absolute;
+    inset: 0;
+  }
+  .con__fachada :global(img) {
+    object-position: 50% 35%;
+  }
+  .con__mapa-capa {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: var(--s-4);
+    background: var(--grafito);
+    color: var(--blanco);
+    --foco: var(--azul-luz);
+  }
+  .con__mapa-texto {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--t-sm);
+    color: var(--plata);
+  }
+  .con__mapa-texto .icono {
+    width: 20px;
+    height: 20px;
+    color: var(--azul-luz);
+  }
+  .con__mapa-boton {
+    --btn-alto: 46px;
+  }
+  .con__mapa :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: var(--niebla);
+  }
+  .con__mapa[data-cargado] .con__mapa-capa,
+  .con__mapa[data-cargado] .con__fachada {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .con__grid {
+      grid-template-columns: 6fr 5fr;
+      gap: clamp(48px, 6vw, 96px);
+      align-items: stretch;
+    }
+    .con__mapa {
+      min-height: 560px;
+    }
+  }
+</style>

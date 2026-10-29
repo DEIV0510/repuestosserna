@@ -1,0 +1,201 @@
+---
+import '@/styles/fuentes.css';
+import '@/styles/global.css';
+import fuentes from '@/data/fuentes.json';
+import Iconos from '@/components/Iconos.astro';
+import Cabecera from '@/components/Cabecera.astro';
+import Pie from '@/components/Pie.astro';
+import WhatsAppFlotante from '@/components/WhatsAppFlotante.astro';
+import Carga from '@/components/Carga.astro';
+import { DIRECCION, INSTAGRAM, MARCA, WHATSAPP_E164, FACEBOOK, MAPS_INDICACIONES } from '@/lib/contacto';
+import { logoData, pictureData } from '@/lib/media';
+import { HERO_SIZES } from '@/lib/hero';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Solo la portada muestra la pantalla de carga y precarga la foto del hero. */
+  portada?: boolean;
+  /** Páginas que no deben indexarse (404). */
+  noindex?: boolean;
+}
+
+const { title, description, portada = false, noindex = false } = Astro.props;
+
+// Sin dominio confirmado no hay canonical ni og:url (no se inventa: ver astro.config.mjs).
+const site = Astro.site;
+const abs = (ruta: string) => (site ? new URL(ruta, site).href : ruta);
+const canonical = site && !noindex ? new URL(Astro.url.pathname, site).href : null;
+
+// Datos estructurados: tienda de autopartes (subtipo de AutomotiveBusiness) con datos reales.
+// Sin horarios, coordenadas ni valoraciones: no están confirmados.
+const negocio: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'AutoPartsStore',
+  name: MARCA.nombre,
+  slogan: MARCA.eslogan,
+  description: 'Venta de repuestos para suspensión, frenos y motor en El Carmen de Viboral, Antioquia.',
+  telephone: `+${WHATSAPP_E164}`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: `${DIRECCION.calle}, ${DIRECCION.sector}`,
+    addressLocality: DIRECCION.ciudad,
+    addressRegion: DIRECCION.departamento,
+    addressCountry: DIRECCION.paisCodigo,
+  },
+  hasMap: MAPS_INDICACIONES,
+  sameAs: [INSTAGRAM.url, FACEBOOK.url].filter(Boolean),
+  ...(site ? { url: new URL('/', site).href, image: abs('/og.jpg'), logo: abs('/icon-512.png') } : {}),
+};
+
+const hero = portada ? { full: pictureData('hero-freno', 'full'), card: pictureData('hero-freno', 'card') } : null;
+const logoCarga = logoData('principal');
+---
+
+<!doctype html>
+<html lang="es-CO" data-intro={portada ? '1' : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#0c0e11" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Arranque, antes del primer pintado:
+         · is-js: hay JavaScript (las animaciones de entrada pueden ocultar su estado inicial).
+         · is-ligero: equipo modesto o ahorro de datos → sin parallax ni efectos costosos.
+         · Pantalla de carga: solo en la portada, la primera vez en la sesión, con movimiento
+           permitido y sin conexión lenta. Avanza con hitos reales y se retira en cuanto el
+           logo terminó de dibujarse y la página está lista (tope 1,3 s desde que se pinta). -->
+    <script is:inline define:vars={{ logoSrcset: logoCarga.avif }}>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('is-js');
+        var c = navigator.connection;
+        var lenta = !!(c && (c.saveData || /(^|-)(2g|3g)$/.test(c.effectiveType || '')));
+        if (lenta || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 2) d.classList.add('is-ligero');
+        var intro = false;
+        try {
+          var reducir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+          var visto = sessionStorage.getItem('sr_intro');
+          sessionStorage.setItem('sr_intro', '1');
+          intro = d.getAttribute('data-intro') === '1' && !reducir && !lenta && !visto && !location.hash;
+        } catch (e) {}
+        if (!intro) {
+          d.classList.add('is-ready');
+          return;
+        }
+        d.classList.add('is-intro');
+        // El logo de la pantalla de carga se pide ya (su imagen es diferida por si no se usa).
+        var l = document.createElement('link');
+        l.rel = 'preload';
+        l.as = 'image';
+        l.type = 'image/avif';
+        l.setAttribute('imagesrcset', logoSrcset);
+        l.setAttribute('imagesizes', '(max-width: 480px) 200px, 240px');
+        document.head.appendChild(l);
+
+        var hechos = 0;
+        var cerrado = false;
+        var pintado = 0;
+        // El avance se escribe en la propia pantalla (no en <html>): así no se recalcula
+        // el estilo de toda la página con cada hito.
+        function avance(p) {
+          var c = document.querySelector('.carga');
+          if (c) c.style.setProperty('--carga-p', String(p));
+        }
+        function hito() {
+          hechos++;
+          avance(Math.max(0.04, Math.min(hechos, 3) / 3));
+          intentar();
+        }
+        function cerrar() {
+          if (cerrado) return;
+          cerrado = true;
+          avance(1);
+          d.classList.add('is-intro-out', 'is-ready');
+          setTimeout(function () {
+            d.classList.remove('is-intro', 'is-intro-out');
+          }, 700);
+        }
+        // Se cierra cuando están los tres hitos y el logo ya se dibujó (≈ 0,85 s desde
+        // que la pantalla se pinta). Si algo tarda (red lenta), a los 1,3 s se cierra igual:
+        // el contenido manda.
+        function intentar() {
+          if (pintado && hechos >= 3 && performance.now() - pintado >= 850) cerrar();
+        }
+        function alListo() {
+          hito();
+          var foto = document.querySelector('img[fetchpriority="high"]');
+          if (foto && !foto.complete) {
+            foto.addEventListener('load', hito, { once: true });
+            foto.addEventListener('error', hito, { once: true });
+          } else hito();
+          if (document.fonts && document.fonts.load) document.fonts.load('800 1em Archivo').then(hito, hito);
+          else hito();
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              pintado = performance.now();
+              setTimeout(intentar, 860);
+              setTimeout(cerrar, 1300);
+            });
+          });
+        }
+        if (document.readyState !== 'loading') alListo();
+        else document.addEventListener('DOMContentLoaded', alListo, { once: true });
+        // Tope absoluto (pestaña en segundo plano, rAF detenido, etc.)
+        setTimeout(cerrar, 2600);
+      })();
+    </script>
+
+    <link rel="preload" href={fuentes.archivo} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fuentes.inter} as="font" type="font/woff2" crossorigin />
+    {
+      hero && (
+        <>
+          <link rel="preload" as="image" type="image/avif" media="(min-width: 900px)" imagesrcset={hero.full.avif} imagesizes={HERO_SIZES.full} fetchpriority="high" />
+          <link rel="preload" as="image" type="image/avif" media="(max-width: 899.98px)" imagesrcset={hero.card.avif} imagesizes={HERO_SIZES.card} fetchpriority="high" />
+        </>
+      )
+    }
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:site_name" content={MARCA.nombre} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={abs('/og.jpg')} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Logo de Serna Repuestos junto a un disco de freno y su mordaza" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={abs('/og.jpg')} />
+
+    {!noindex && <script type="application/ld+json" set:html={JSON.stringify(negocio)} />}
+  </head>
+  <body>
+    <Iconos />
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    {portada && <Carga />}
+    <Cabecera />
+    <main id="contenido" tabindex="-1">
+      <slot />
+    </main>
+    <Pie />
+    <WhatsAppFlotante />
+    <script>
+      import '@/scripts/app';
+    </script>
+  </body>
+</html>

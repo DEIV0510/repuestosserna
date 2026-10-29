@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.cache/
+.vercel/
+*.log
+.DS_Store
+Thumbs.db
+qa-capturas/
+# El video original pesa 9 MB: queda en la carpeta local, no en el repositorio.
+_material-cliente/*.mp4

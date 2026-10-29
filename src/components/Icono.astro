@@ -1,0 +1,36 @@
+---
+// Ícono del sprite (Iconos.astro). Decorativo por defecto: el texto del control lo nombra.
+export type NombreIcono =
+  | 'whatsapp'
+  | 'instagram'
+  | 'facebook'
+  | 'flecha'
+  | 'abajo'
+  | 'externo'
+  | 'menu'
+  | 'cerrar'
+  | 'pin'
+  | 'ruta'
+  | 'mapa'
+  | 'suspension'
+  | 'frenos'
+  | 'motor'
+  | 'persona'
+  | 'referencia'
+  | 'chat'
+  | 'local'
+  | 'alerta'
+  | 'check';
+
+interface Props {
+  nombre: NombreIcono;
+  class?: string;
+}
+
+const RELLENOS: NombreIcono[] = ['whatsapp', 'facebook'];
+const { nombre, class: cls } = Astro.props;
+---
+
+<svg class:list={['icono', `icono--${nombre}`, { 'icono--relleno': RELLENOS.includes(nombre) }, cls]} aria-hidden="true" focusable="false">
+  <use href={`#i-${nombre}`}></use>
+</svg>

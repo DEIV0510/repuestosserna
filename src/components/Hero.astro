@@ -1,0 +1,429 @@
+---
+// Hero: texto y llamadas a la acción a la izquierda; a la derecha, la foto técnica cortada
+// a 12° con marcas de catálogo (números sobre las piezas reales de la foto + leyenda).
+// La foto se encuadra como `cover` dentro de un lienzo con su proporción exacta: así las
+// marcas, puestas en coordenadas de la imagen, caen siempre sobre su pieza. Todas quedan
+// dentro de la zona que se ve en cualquier pantalla de escritorio (x 20–72 % de la foto).
+// Móvil: título y botones primero; la foto (recorte 16:10) va debajo, sin marcas.
+import Icono from './Icono.astro';
+import { pictureData } from '@/lib/media';
+import { WA } from '@/lib/whatsapp';
+import { DIRECCION } from '@/lib/contacto';
+import { HERO_SIZES } from '@/lib/hero';
+
+const full = pictureData('hero-freno', 'full');
+const card = pictureData('hero-freno', 'card');
+
+// Piezas señaladas, en píxeles de la foto original (2600×1737).
+const W = full.width;
+const H = full.height;
+const NOTAS = [
+  { texto: 'Suspensión', punto: [1500, 430] },
+  { texto: 'Disco de freno', punto: [1560, 1240] },
+  { texto: 'Mordaza', punto: [760, 900] },
+];
+const pct = (v: number, total: number) => `${((v / total) * 100).toFixed(2)}%`;
+const n2 = (i: number) => String(i + 1).padStart(2, '0');
+
+const SISTEMAS = [
+  { id: 'suspension', texto: 'Suspensión', icono: 'suspension' },
+  { id: 'frenos', texto: 'Frenos', icono: 'frenos' },
+  { id: 'motor', texto: 'Motor', icono: 'motor' },
+] as const;
+---
+
+<section id="inicio" class="hero sup-oscuro" aria-labelledby="hero-titulo">
+  <div class="hero__media">
+    <div class="hero__encuadre">
+      <div class="hero__lienzo" style={`--ratio:${(W / H).toFixed(4)}`}>
+        <picture class="hero__foto" style={`--foto-bg:${full.bg}`}>
+          <source media="(min-width: 900px)" type="image/avif" srcset={full.avif} sizes={HERO_SIZES.full} />
+          <source media="(min-width: 900px)" type="image/webp" srcset={full.webp} sizes={HERO_SIZES.full} />
+          <source type="image/avif" srcset={card.avif} sizes={HERO_SIZES.card} />
+          <source type="image/webp" srcset={card.webp} sizes={HERO_SIZES.card} />
+          <img src={card.src} width={card.width} height={card.height} alt={full.alt} loading="eager" decoding="async" fetchpriority="high" />
+        </picture>
+        {
+          NOTAS.map((n, i) => (
+            <span class="hero__marca num" style={`left:${pct(n.punto[0], W)};top:${pct(n.punto[1], H)};--i:${i}`} aria-hidden="true">
+              {n2(i)}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+    <span class="hero__filo" aria-hidden="true"></span>
+    <ol class="hero__leyenda" aria-label="Piezas señaladas en la foto">
+      {
+        NOTAS.map((n, i) => (
+          <li style={`--i:${i}`}>
+            <span class="num" aria-hidden="true">
+              {n2(i)}
+            </span>
+            {n.texto}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <div class="contenedor hero__cuerpo">
+    <div class="hero__texto">
+      <p class="rotulo hero__rotulo"><span class="trazo"></span>Serna Repuestos · {DIRECCION.ciudad}</p>
+      <h1 id="hero-titulo" class="titulo hero__titulo">
+        <span class="hero__linea">El repuesto correcto.</span>
+        <span class="hero__linea hero__linea--plata">La confianza en cada recorrido.</span>
+      </h1>
+      <p class="hero__entrada">Repuestos para suspensión, frenos y motor. Encuentra lo que necesitas con atención personalizada.</p>
+      <div class="hero__acciones">
+        <a class="btn btn--primario" href={WA.general} target="_blank" rel="noopener" data-cta="hero">
+          <Icono nombre="whatsapp" />
+          Consultar por WhatsApp
+        </a>
+        <a class="btn btn--secundario" href="#especialidades">
+          Explorar especialidades
+          <Icono nombre="abajo" />
+        </a>
+      </div>
+    </div>
+
+    <ul class="hero__sistemas" aria-label="Especialidades">
+      {
+        SISTEMAS.map((s) => (
+          <li>
+            <a href={`#${s.id}`}>
+              <Icono nombre={s.icono} />
+              {s.texto}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--header-h);
+    overflow: hidden;
+  }
+
+  /* ---------- Foto ---------- */
+  .hero__media {
+    position: relative;
+    order: 2;
+    aspect-ratio: 16 / 10;
+    margin-top: var(--s-6);
+  }
+  .hero__encuadre {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  /* En móvil el recorte 16:10 ya es la proporción del marco. */
+  .hero__lienzo {
+    position: absolute;
+    inset: 0;
+  }
+  .hero__foto,
+  .hero__foto img {
+    width: 100%;
+    height: 100%;
+  }
+  .hero__foto {
+    display: block;
+    background: var(--foto-bg);
+  }
+  .hero__foto img {
+    object-fit: cover;
+  }
+  .hero__marca,
+  .hero__leyenda {
+    display: none;
+  }
+  /* Filo: línea azul en el borde de la foto (móvil: arriba a la izquierda). */
+  .hero__filo {
+    position: absolute;
+    left: var(--gutter);
+    top: -1px;
+    width: 72px;
+    height: 3px;
+    background: var(--azul-vivo);
+  }
+
+  /* ---------- Texto ---------- */
+  .hero__cuerpo {
+    order: 1;
+    position: relative;
+    padding-top: clamp(28px, 6vw, 48px);
+  }
+  .hero__rotulo {
+    color: var(--plata);
+  }
+  .hero__titulo {
+    margin-top: var(--s-5);
+    font-size: var(--t-hero);
+    font-stretch: 106%;
+    line-height: 0.96;
+    max-width: 13ch;
+  }
+  .hero__linea {
+    display: block;
+  }
+  .hero__linea--plata {
+    margin-top: 0.12em;
+    color: var(--titanio);
+  }
+  .hero__entrada {
+    margin-top: var(--s-5);
+    max-width: 42ch;
+    font-size: var(--t-md);
+    color: var(--plata);
+  }
+  .hero__acciones {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+  }
+
+  .hero__sistemas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    margin-top: var(--s-6);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--acero);
+    font-size: var(--t-sm);
+    color: var(--plata);
+  }
+  .hero__sistemas a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+  }
+  .hero__sistemas a {
+    font-weight: 600;
+    text-decoration: none;
+    transition: color var(--t-rapida) ease;
+  }
+  .hero__sistemas a:hover {
+    color: var(--blanco);
+  }
+  .hero__sistemas .icono {
+    width: 20px;
+    height: 20px;
+    color: var(--azul-luz);
+  }
+
+  @media (min-width: 560px) {
+    .hero__acciones {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+
+  /* ---------- Escritorio ---------- */
+  @media (min-width: 900px) {
+    .hero {
+      min-height: max(680px, 100svh);
+      max-height: 1080px;
+      padding-top: 0;
+    }
+    .hero__media {
+      position: absolute;
+      top: var(--header-h);
+      right: 0;
+      bottom: 0;
+      width: 56%;
+      margin: 0;
+      aspect-ratio: auto;
+      /* Contenedor de consulta: el corte y el lienzo se calculan con su alto y ancho. */
+      container-type: size;
+    }
+    /* Corte a 12°: el borde izquierdo de la foto se inclina como el nombre del logo. */
+    .hero__encuadre {
+      clip-path: polygon(calc(100cqh * var(--tg)) 0, 100% 0, 100% 100%, 0 100%);
+    }
+    /* Lienzo «cover» con la proporción exacta de la foto (unidades de contenedor). */
+    .hero__lienzo {
+      --w: max(100cqw, 100cqh * var(--ratio));
+      inset: auto;
+      width: var(--w);
+      aspect-ratio: var(--ratio);
+      left: calc((100cqw - var(--w)) * 0.42);
+      top: calc((100cqh - var(--w) / var(--ratio)) * 0.5);
+    }
+    .hero__filo {
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      height: auto;
+      transform: skewX(calc(var(--angulo) * -1));
+      transform-origin: 0 100%;
+    }
+
+    .hero__cuerpo {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: calc(var(--header-h) + var(--s-7));
+      padding-bottom: 0;
+    }
+    .hero__texto {
+      width: 52%;
+      padding-right: var(--s-6);
+      margin-block: auto;
+      padding-block: var(--s-7);
+    }
+    .hero__titulo {
+      max-width: none;
+    }
+    .hero__sistemas {
+      width: 46%;
+      margin-top: 0;
+      padding-block: var(--s-4) var(--s-5);
+    }
+
+    /* Marcas de catálogo: número sobre la pieza, con mira fina */
+    .hero__marca {
+      display: grid;
+      place-items: center;
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      transform: translate(-50%, -50%);
+      background: rgb(8 9 11 / 0.86);
+      border: 1px solid var(--azul-vivo);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--blanco);
+    }
+    .hero__marca::before,
+    .hero__marca::after {
+      content: '';
+      position: absolute;
+      background: var(--blanco);
+      opacity: 0.7;
+    }
+    .hero__marca::before {
+      left: 100%;
+      top: 50%;
+      width: 14px;
+      height: 1px;
+    }
+    .hero__marca::after {
+      top: 100%;
+      left: 50%;
+      width: 1px;
+      height: 14px;
+    }
+    .hero__leyenda {
+      display: flex;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      background: var(--grafito);
+      border-top: 1px solid var(--acero);
+      border-left: 1px solid var(--acero);
+    }
+    .hero__leyenda li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      font-size: var(--t-xs);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--plata);
+    }
+    .hero__leyenda li + li {
+      border-left: 1px solid var(--acero);
+    }
+    .hero__leyenda .num {
+      color: var(--azul-luz);
+    }
+  }
+  @media (min-width: 900px) and (max-width: 1199.98px) {
+    .hero__leyenda li {
+      padding: 12px 12px;
+      letter-spacing: 0.08em;
+    }
+  }
+
+
+  /* ---------- Movimiento (solo transform: no retrasa el LCP) ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.is-js) .hero__foto img {
+      transform: scale(1.06);
+      transition: transform 1600ms var(--ease-out);
+    }
+    :global(.is-ready) .hero__foto img {
+      transform: none;
+    }
+    /* Las marcas aparecen una a una, como un inspector señalando piezas; la leyenda sube. */
+    :global(.is-js) .hero__marca {
+      opacity: 0;
+      scale: 0.6;
+      transition:
+        opacity 400ms ease,
+        scale 600ms var(--ease-out);
+      transition-delay: calc(700ms + var(--i) * 220ms);
+    }
+    :global(.is-ready) .hero__marca {
+      opacity: 1;
+      scale: 1;
+    }
+    :global(.is-js) .hero__leyenda {
+      transform: translateY(101%);
+      transition: transform 700ms var(--ease-out) 500ms;
+    }
+    :global(.is-ready) .hero__leyenda {
+      transform: none;
+    }
+    /* Pulso discreto de cada marca (dos veces, después de aparecer) */
+    :global(.is-ready) .hero__marca {
+      animation: hero-pulso 1600ms var(--ease-out) calc(1500ms + var(--i) * 220ms) 2;
+    }
+    @keyframes hero-pulso {
+      0% {
+        box-shadow: 0 0 0 0 rgb(31 85 255 / 0.7);
+      }
+      100% {
+        box-shadow: 0 0 0 14px rgb(31 85 255 / 0);
+      }
+    }
+    :global(.is-js) .hero__rotulo .trazo {
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      transition: transform 800ms var(--ease-out) 200ms;
+    }
+    :global(.is-ready) .hero__rotulo .trazo {
+      transform: none;
+    }
+
+    /* Parallax muy leve de la foto (solo navegadores con scroll-timeline y equipos capaces) */
+    @supports (animation-timeline: view()) {
+      @media (min-width: 900px) {
+        :global(html:not(.is-ligero)) .hero__lienzo {
+          animation: hero-parallax linear both;
+          animation-timeline: view();
+          animation-range: exit 0% exit 100%;
+        }
+        @keyframes hero-parallax {
+          to {
+            translate: 0 6%;
+          }
+        }
+      }
+    }
+  }
+</style>

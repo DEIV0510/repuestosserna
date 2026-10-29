@@ -1,0 +1,123 @@
+---
+// Pantalla de carga: un detalle de marca, no una barrera.
+// · Solo en la primera visita de la sesión, con movimiento permitido y sin conexión lenta
+//   (lo decide el script del <head> en Base.astro, que también la cierra).
+// · El logo se descubre de izquierda a derecha mientras un barrido azul inclinado a 12°
+//   lo recorre; debajo, una línea de precisión cruza la pantalla y avanza SOLO con hitos
+//   reales (documento, tipografía, foto principal). Sin porcentajes.
+// · Sin JavaScript no aparece (html.is-intro). Si el script se detuviera, la propia CSS la
+//   retira a los 3 s.
+import Logo from './Logo.astro';
+---
+
+<div class="carga" aria-hidden="true">
+  <div class="carga__marca">
+    <Logo version="principal" ancho={240} sizes="(max-width: 480px) 200px, 240px" decorativo class="carga__logo" />
+    <span class="carga__barrido"></span>
+  </div>
+  <div class="carga__riel"><span class="carga__avance"></span></div>
+</div>
+
+<style>
+  .carga {
+    display: none;
+  }
+  :global(html.is-intro) .carga {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 36px;
+    background: var(--grafito);
+    animation: carga-respaldo 1ms linear 3s forwards;
+  }
+  :global(html.is-intro-out) .carga {
+    animation: carga-salida 520ms var(--ease-in-out) 120ms forwards;
+    pointer-events: none;
+  }
+  @keyframes carga-salida {
+    from {
+      clip-path: inset(0 0 0 0);
+    }
+    to {
+      clip-path: inset(0 0 100% 0);
+      visibility: hidden;
+    }
+  }
+  @keyframes carga-respaldo {
+    to {
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+
+  .carga__marca {
+    position: relative;
+    width: min(56vw, 240px);
+    overflow: hidden;
+  }
+  .carga__logo {
+    width: 100%;
+    animation: carga-logo 760ms var(--ease-out) 80ms both;
+  }
+  @keyframes carga-logo {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  /* Barrido: franja azul inclinada que acompaña el borde que descubre el logo. */
+  .carga__barrido {
+    position: absolute;
+    top: -10%;
+    bottom: -10%;
+    left: 0;
+    width: 3px;
+    background: var(--azul-vivo);
+    box-shadow: 0 0 18px 2px rgb(31 85 255 / 0.55);
+    transform: translateX(-8px) skewX(calc(var(--angulo) * -1));
+    animation: carga-barrido 760ms var(--ease-out) 80ms both;
+  }
+  @keyframes carga-barrido {
+    0% {
+      left: 0;
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      left: 100%;
+      opacity: 0;
+    }
+  }
+
+  /* Línea de precisión: cruza la pantalla; el tramo azul avanza con los hitos reales. */
+  .carga__riel {
+    position: relative;
+    width: 100vw;
+    height: 2px;
+    background: var(--grafito-3);
+    overflow: hidden;
+  }
+  .carga__avance {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(31 85 255 / 0) 0%, var(--azul) 45%, var(--azul-vivo) 92%, #b9c9ff 100%);
+    transform-origin: 0 50%;
+    transform: scaleX(var(--carga-p, 0.04));
+    transition: transform 420ms var(--ease-out);
+  }
+  :global(html.is-intro-out) .carga__marca,
+  :global(html.is-intro-out) .carga__riel {
+    transition:
+      opacity 220ms ease-in,
+      transform 220ms ease-in;
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+</style>

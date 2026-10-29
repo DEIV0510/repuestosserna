@@ -1,0 +1,33 @@
+---
+// <picture> con AVIF + WebP, anchos reales y dimensiones explícitas (sin saltos de diseño).
+// El marco toma el color de fondo real de la foto mientras carga.
+import { pictureData, type MediaId, type Recorte } from '@/lib/media';
+
+interface Props {
+  id: MediaId;
+  sizes: string;
+  recorte?: Recorte;
+  alt?: string;
+  /** Imagen del primer pantallazo (LCP): carga inmediata y prioridad alta. */
+  priority?: boolean;
+  class?: string;
+}
+
+const { id, sizes, recorte = 'card', alt, priority = false, class: cls } = Astro.props;
+const d = pictureData(id, recorte);
+---
+
+<picture class:list={['foto', cls]} style={`--foto-bg:${d.bg}`}>
+  <source type="image/avif" srcset={d.avif} sizes={sizes} />
+  <source type="image/webp" srcset={d.webp} sizes={sizes} />
+  <img
+    src={d.src}
+    width={d.width}
+    height={d.height}
+    alt={alt ?? d.alt}
+    loading={priority ? 'eager' : 'lazy'}
+    decoding="async"
+    fetchpriority={priority ? 'high' : undefined}
+    onerror="this.closest('picture')?.classList.add('foto--error')"
+  />
+</picture>

@@ -1,0 +1,469 @@
+{
+  "hero-freno": {
+    "alt": "Disco de freno perforado y mordaza montados en la rueda de un vehículo, con la suspensión al fondo",
+    "crops": {
+      "full": {
+        "w": 2600,
+        "h": 1737,
+        "bg": "#212a2a",
+        "avif": [
+          [
+            "/img/hero-freno-full-360.3911acee.avif",
+            360
+          ],
+          [
+            "/img/hero-freno-full-540.b998b674.avif",
+            540
+          ],
+          [
+            "/img/hero-freno-full-720.46b685dc.avif",
+            720
+          ],
+          [
+            "/img/hero-freno-full-840.630bc6ce.avif",
+            840
+          ],
+          [
+            "/img/hero-freno-full-960.37df221c.avif",
+            960
+          ],
+          [
+            "/img/hero-freno-full-1280.6b3e246d.avif",
+            1280
+          ],
+          [
+            "/img/hero-freno-full-1600.8b5ca688.avif",
+            1600
+          ],
+          [
+            "/img/hero-freno-full-2000.42566d96.avif",
+            2000
+          ]
+        ],
+        "webp": [
+          [
+            "/img/hero-freno-full-360.c8a35695.webp",
+            360
+          ],
+          [
+            "/img/hero-freno-full-540.7f0afd73.webp",
+            540
+          ],
+          [
+            "/img/hero-freno-full-720.8f122b88.webp",
+            720
+          ],
+          [
+            "/img/hero-freno-full-840.b435b6f8.webp",
+            840
+          ],
+          [
+            "/img/hero-freno-full-960.356eee4b.webp",
+            960
+          ],
+          [
+            "/img/hero-freno-full-1280.d44b74b4.webp",
+            1280
+          ],
+          [
+            "/img/hero-freno-full-1600.32a3d9e2.webp",
+            1600
+          ],
+          [
+            "/img/hero-freno-full-2000.381ff386.webp",
+            2000
+          ]
+        ]
+      },
+      "card": {
+        "w": 1960,
+        "h": 1225,
+        "bg": "#303d3c",
+        "avif": [
+          [
+            "/img/hero-freno-card-360.52716cbb.avif",
+            360
+          ],
+          [
+            "/img/hero-freno-card-540.c62e1514.avif",
+            540
+          ],
+          [
+            "/img/hero-freno-card-720.22128564.avif",
+            720
+          ],
+          [
+            "/img/hero-freno-card-840.19fb5f76.avif",
+            840
+          ],
+          [
+            "/img/hero-freno-card-960.1ef66c88.avif",
+            960
+          ],
+          [
+            "/img/hero-freno-card-1280.4320187b.avif",
+            1280
+          ],
+          [
+            "/img/hero-freno-card-1600.2aa07e0b.avif",
+            1600
+          ]
+        ],
+        "webp": [
+          [
+            "/img/hero-freno-card-360.1e9a427f.webp",
+            360
+          ],
+          [
+            "/img/hero-freno-card-540.c8ec10f3.webp",
+            540
+          ],
+          [
+            "/img/hero-freno-card-720.f40e44dc.webp",
+            720
+          ],
+          [
+            "/img/hero-freno-card-840.30c68886.webp",
+            840
+          ],
+          [
+            "/img/hero-freno-card-960.2bcd5c4c.webp",
+            960
+          ],
+          [
+            "/img/hero-freno-card-1280.aeb7de97.webp",
+            1280
+          ],
+          [
+            "/img/hero-freno-card-1600.d6cb6f8d.webp",
+            1600
+          ]
+        ]
+      }
+    }
+  },
+  "suspension": {
+    "alt": "Amortiguador con resorte helicoidal montado en la suspensión de un vehículo",
+    "crops": {
+      "card": {
+        "w": 1700,
+        "h": 1727,
+        "bg": "#0b1316",
+        "avif": [
+          [
+            "/img/suspension-card-360.aeff806a.avif",
+            360
+          ],
+          [
+            "/img/suspension-card-540.c86516e3.avif",
+            540
+          ],
+          [
+            "/img/suspension-card-720.45a5e76c.avif",
+            720
+          ],
+          [
+            "/img/suspension-card-840.37a895c0.avif",
+            840
+          ],
+          [
+            "/img/suspension-card-960.85d3192b.avif",
+            960
+          ],
+          [
+            "/img/suspension-card-1280.96f0d607.avif",
+            1280
+          ],
+          [
+            "/img/suspension-card-1600.754169c2.avif",
+            1600
+          ]
+        ],
+        "webp": [
+          [
+            "/img/suspension-card-360.0a1d5571.webp",
+            360
+          ],
+          [
+            "/img/suspension-card-540.3c733013.webp",
+            540
+          ],
+          [
+            "/img/suspension-card-720.2b4df390.webp",
+            720
+          ],
+          [
+            "/img/suspension-card-840.4c2fb730.webp",
+            840
+          ],
+          [
+            "/img/suspension-card-960.754bce6b.webp",
+            960
+          ],
+          [
+            "/img/suspension-card-1280.1042b538.webp",
+            1280
+          ],
+          [
+            "/img/suspension-card-1600.2664ef86.webp",
+            1600
+          ]
+        ]
+      }
+    }
+  },
+  "frenos": {
+    "alt": "Disco de freno y mordaza de un vehículo sin la rueda",
+    "crops": {
+      "card": {
+        "w": 2200,
+        "h": 1733,
+        "bg": "#222320",
+        "avif": [
+          [
+            "/img/frenos-card-360.6f97e8c0.avif",
+            360
+          ],
+          [
+            "/img/frenos-card-540.5d6bb59b.avif",
+            540
+          ],
+          [
+            "/img/frenos-card-720.a339ab9d.avif",
+            720
+          ],
+          [
+            "/img/frenos-card-840.f283a1f0.avif",
+            840
+          ],
+          [
+            "/img/frenos-card-960.7f3cfbcf.avif",
+            960
+          ],
+          [
+            "/img/frenos-card-1280.012ae578.avif",
+            1280
+          ],
+          [
+            "/img/frenos-card-1600.e53b9a35.avif",
+            1600
+          ]
+        ],
+        "webp": [
+          [
+            "/img/frenos-card-360.b1cc51b7.webp",
+            360
+          ],
+          [
+            "/img/frenos-card-540.6bea2292.webp",
+            540
+          ],
+          [
+            "/img/frenos-card-720.137ce592.webp",
+            720
+          ],
+          [
+            "/img/frenos-card-840.12ba7aa6.webp",
+            840
+          ],
+          [
+            "/img/frenos-card-960.c8891c71.webp",
+            960
+          ],
+          [
+            "/img/frenos-card-1280.33b8c596.webp",
+            1280
+          ],
+          [
+            "/img/frenos-card-1600.bd419337.webp",
+            1600
+          ]
+        ]
+      }
+    }
+  },
+  "motor": {
+    "alt": "Culata de motor abierta con árboles de levas y cadena de distribución",
+    "crops": {
+      "card": {
+        "w": 2200,
+        "h": 1533,
+        "bg": "#4b4336",
+        "avif": [
+          [
+            "/img/motor-card-360.7e6d8851.avif",
+            360
+          ],
+          [
+            "/img/motor-card-540.ded69fa2.avif",
+            540
+          ],
+          [
+            "/img/motor-card-720.14835b15.avif",
+            720
+          ],
+          [
+            "/img/motor-card-840.3505c239.avif",
+            840
+          ],
+          [
+            "/img/motor-card-960.4722e54a.avif",
+            960
+          ],
+          [
+            "/img/motor-card-1280.a9318ae2.avif",
+            1280
+          ],
+          [
+            "/img/motor-card-1600.cbddef5a.avif",
+            1600
+          ]
+        ],
+        "webp": [
+          [
+            "/img/motor-card-360.c8e8c610.webp",
+            360
+          ],
+          [
+            "/img/motor-card-540.0a553c5a.webp",
+            540
+          ],
+          [
+            "/img/motor-card-720.4d2f1964.webp",
+            720
+          ],
+          [
+            "/img/motor-card-840.5ade20d5.webp",
+            840
+          ],
+          [
+            "/img/motor-card-960.91c0adca.webp",
+            960
+          ],
+          [
+            "/img/motor-card-1280.86514eba.webp",
+            1280
+          ],
+          [
+            "/img/motor-card-1600.2b34befe.webp",
+            1600
+          ]
+        ]
+      }
+    }
+  },
+  "local-asesor": {
+    "alt": "Asesor de Serna Repuestos frente a las estanterías del local",
+    "crops": {
+      "card": {
+        "w": 720,
+        "h": 800,
+        "bg": "#453645",
+        "avif": [
+          [
+            "/img/local-asesor-card-360.77e5e71f.avif",
+            360
+          ],
+          [
+            "/img/local-asesor-card-540.63c76a19.avif",
+            540
+          ],
+          [
+            "/img/local-asesor-card-720.584543b1.avif",
+            720
+          ]
+        ],
+        "webp": [
+          [
+            "/img/local-asesor-card-360.e524765d.webp",
+            360
+          ],
+          [
+            "/img/local-asesor-card-540.1390f561.webp",
+            540
+          ],
+          [
+            "/img/local-asesor-card-720.18b24e0b.webp",
+            720
+          ]
+        ]
+      }
+    }
+  },
+  "local-estanteria": {
+    "alt": "Estanterías del local de Serna Repuestos con cajas de repuestos etiquetadas",
+    "crops": {
+      "card": {
+        "w": 720,
+        "h": 800,
+        "bg": "#251f22",
+        "avif": [
+          [
+            "/img/local-estanteria-card-360.44d78505.avif",
+            360
+          ],
+          [
+            "/img/local-estanteria-card-540.94fd9949.avif",
+            540
+          ],
+          [
+            "/img/local-estanteria-card-720.da011b64.avif",
+            720
+          ]
+        ],
+        "webp": [
+          [
+            "/img/local-estanteria-card-360.44cc9534.webp",
+            360
+          ],
+          [
+            "/img/local-estanteria-card-540.6979c98f.webp",
+            540
+          ],
+          [
+            "/img/local-estanteria-card-720.e279d16b.webp",
+            720
+          ]
+        ]
+      }
+    }
+  },
+  "local-fachada": {
+    "alt": "Fachada del local de Serna Repuestos en el sector La María, El Carmen de Viboral",
+    "crops": {
+      "card": {
+        "w": 720,
+        "h": 800,
+        "bg": "#66645f",
+        "avif": [
+          [
+            "/img/local-fachada-card-360.c84df26e.avif",
+            360
+          ],
+          [
+            "/img/local-fachada-card-540.8c39cfc4.avif",
+            540
+          ],
+          [
+            "/img/local-fachada-card-720.1903ede1.avif",
+            720
+          ]
+        ],
+        "webp": [
+          [
+            "/img/local-fachada-card-360.70f9762b.webp",
+            360
+          ],
+          [
+            "/img/local-fachada-card-540.c30197cd.webp",
+            540
+          ],
+          [
+            "/img/local-fachada-card-720.1c396f5f.webp",
+            720
+          ]
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,380 @@
+---
+// Cabecera fija: transparente sobre el hero y sólida (grafito) al desplazarse.
+// · Indicador de sección activa (línea azul bajo el enlace) y de avance de lectura
+//   (línea de precisión en el borde inferior, solo CSS con scroll-timeline).
+// · Móvil: botón «Consultar» siempre visible + menú en <dialog> (foco atrapado, Esc,
+//   capa superior del navegador: nada lo tapa).
+import Logo from './Logo.astro';
+import Icono from './Icono.astro';
+import { NAV } from '@/lib/nav';
+import { WA } from '@/lib/whatsapp';
+import { DIRECCION, INSTAGRAM, WHATSAPP_VISIBLE } from '@/lib/contacto';
+---
+
+<header class="cab" data-solida="false">
+  <div class="cab__barra contenedor">
+    <a class="cab__marca" href="/#inicio" aria-label="Serna Repuestos, ir al inicio">
+      <Logo version="principal" ancho={92} sizes="(min-width: 900px) 104px, 84px" decorativo eager class="cab__logo" />
+    </a>
+
+    <nav class="cab__nav" aria-label="Principal">
+      <ul>
+        {
+          NAV.map((n) => (
+            <li>
+              <a href={`/#${n.id}`} data-nav={n.id}>
+                {n.texto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="cab__acciones">
+      <a class="btn btn--primario cab__cta" href={WA.general} target="_blank" rel="noopener" data-cta="cabecera">
+        <Icono nombre="whatsapp" />
+        <span class="cab__cta-largo" aria-hidden="true">Consultar repuesto</span>
+        <span class="cab__cta-corto" aria-hidden="true">Consultar</span>
+        <span class="sr-only">Consultar repuesto por WhatsApp</span>
+      </a>
+      <button class="cab__abrir" type="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false" data-menu-abrir>
+        <Icono nombre="menu" />
+        <span class="sr-only">Abrir menú</span>
+      </button>
+    </div>
+  </div>
+  <span class="cab__avance" aria-hidden="true"></span>
+</header>
+
+<dialog id="menu" class="menu" aria-label="Menú">
+  <div class="menu__barra contenedor">
+    <span class="menu__marca"><Logo version="principal" ancho={84} decorativo class="cab__logo" /></span>
+    <button class="cab__abrir" type="button" data-menu-cerrar>
+      <Icono nombre="cerrar" />
+      <span class="sr-only">Cerrar menú</span>
+    </button>
+  </div>
+  <nav class="menu__nav contenedor" aria-label="Menú móvil">
+    <ol>
+      {
+        NAV.map((n, i) => (
+          <li>
+            <a href={`/#${n.id}`} data-menu-enlace>
+              <span class="menu__num num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              {n.texto}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+  <div class="menu__pie contenedor">
+    <a class="btn btn--primario menu__cta" href={WA.general} target="_blank" rel="noopener" data-cta="menu">
+      <Icono nombre="whatsapp" />
+      Consultar por WhatsApp
+    </a>
+    <p class="menu__datos">
+      <span>{DIRECCION.calle} · {DIRECCION.sector}</span>
+      <span>{DIRECCION.ciudad}, {DIRECCION.departamento}</span>
+      <span>WhatsApp <span class="num">{WHATSAPP_VISIBLE}</span> · {INSTAGRAM.usuario}</span>
+    </p>
+  </div>
+</dialog>
+
+<style>
+  .cab {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 100;
+    height: var(--header-h);
+    color: var(--blanco);
+    transition:
+      background-color var(--t-media) ease,
+      box-shadow var(--t-media) ease;
+  }
+  /* Sobre el hero: un velo muy suave arriba para que el menú se lea sobre cualquier foto. */
+  .cab::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 -24px;
+    z-index: -1;
+    background: linear-gradient(rgb(8 9 11 / 0.7), transparent);
+    transition: opacity var(--t-media) ease;
+    pointer-events: none;
+  }
+  .cab[data-solida='true'] {
+    background: rgb(12 14 17 / 0.97);
+    box-shadow: inset 0 -1px 0 var(--acero);
+  }
+  .cab[data-solida='true']::before {
+    opacity: 0;
+  }
+  .cab__barra {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+  }
+  .cab__marca {
+    display: block;
+    flex: none;
+    padding: 6px 0;
+  }
+  .cab__logo {
+    width: 84px;
+  }
+  @media (min-width: 900px) {
+    .cab__logo {
+      width: 104px;
+    }
+  }
+
+  .cab__nav {
+    display: none;
+    margin-inline: auto;
+  }
+  .cab__nav ul {
+    display: flex;
+    gap: clamp(18px, 2.2vw, 36px);
+  }
+  .cab__nav a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--t-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: var(--plata);
+    transition: color var(--t-rapida) ease;
+  }
+  .cab__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 6px;
+    height: 2px;
+    background: var(--azul-vivo);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--t-media) var(--ease-out);
+  }
+  .cab__nav a:hover,
+  .cab__nav a.is-activo {
+    color: var(--blanco);
+  }
+  .cab__nav a:hover::after,
+  .cab__nav a.is-activo::after {
+    transform: scaleX(1);
+  }
+
+  .cab__acciones {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-left: auto;
+  }
+  .cab__cta {
+    --btn-alto: 44px;
+    padding-inline: 14px;
+    gap: 8px;
+  }
+  .cab__cta .icono {
+    width: 18px;
+    height: 18px;
+  }
+  .cab__cta-largo {
+    display: none;
+  }
+  .cab__cta-corto {
+    display: inline;
+  }
+
+  .cab__abrir {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--blanco);
+    cursor: pointer;
+  }
+
+  @media (min-width: 1024px) {
+    .cab__nav {
+      display: block;
+    }
+    .cab__abrir {
+      display: none;
+    }
+    .cab__acciones {
+      margin-left: 0;
+    }
+    .cab__cta {
+      --btn-alto: 46px;
+      padding-inline: 18px;
+    }
+    .cab__cta-largo {
+      display: inline;
+    }
+    .cab__cta-corto {
+      display: none;
+    }
+  }
+  @media (max-width: 359.98px) {
+    .cab__cta-corto {
+      display: none;
+    }
+  }
+
+  /* Avance de lectura: solo navegadores con scroll-timeline; el resto no lo muestra. */
+  .cab__avance {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--azul-vivo);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    opacity: 0;
+    transition: opacity var(--t-media) ease;
+  }
+  .cab[data-solida='true'] .cab__avance {
+    opacity: 1;
+  }
+  @supports (animation-timeline: scroll()) {
+    .cab__avance {
+      animation: cab-avance linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+  @keyframes cab-avance {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* ---------- Menú móvil ---------- */
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0 0 max(var(--s-6), env(safe-area-inset-bottom));
+    border: 0;
+    background: var(--grafito);
+    color: var(--blanco);
+    overflow-y: auto;
+    display: none;
+    flex-direction: column;
+  }
+  .menu[open] {
+    display: flex;
+  }
+  .menu::backdrop {
+    background: rgb(8 9 11 / 0.6);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .menu {
+      transition:
+        clip-path 420ms var(--ease-out),
+        display 420ms allow-discrete,
+        overlay 420ms allow-discrete;
+      clip-path: inset(0 0 100% 0);
+    }
+    .menu[open] {
+      clip-path: inset(0 0 0 0);
+    }
+    @starting-style {
+      .menu[open] {
+        clip-path: inset(0 0 100% 0);
+      }
+    }
+    .menu[open] .menu__nav li {
+      animation: menu-entra 520ms var(--ease-out) both;
+      animation-delay: calc(120ms + var(--i, 0) * 50ms);
+    }
+  }
+  @keyframes menu-entra {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+  .menu__barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-h);
+    flex: none;
+    box-shadow: inset 0 -1px 0 var(--acero);
+  }
+  .menu__marca {
+    display: block;
+  }
+  .menu__nav {
+    padding-block: var(--s-6);
+  }
+  .menu__nav li {
+    border-bottom: 1px solid var(--acero);
+  }
+  .menu__nav li:nth-child(1) {
+    --i: 0;
+  }
+  .menu__nav li:nth-child(2) {
+    --i: 1;
+  }
+  .menu__nav li:nth-child(3) {
+    --i: 2;
+  }
+  .menu__nav li:nth-child(4) {
+    --i: 3;
+  }
+  .menu__nav li:nth-child(5) {
+    --i: 4;
+  }
+  .menu__nav a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-4);
+    padding: 18px 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 7vw, 2.2rem);
+    font-weight: 800;
+    font-stretch: 106%;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .menu__num {
+    font-family: var(--font-text);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--azul-luz);
+  }
+  .menu__pie {
+    margin-top: auto;
+    display: grid;
+    gap: var(--s-5);
+  }
+  .menu__cta {
+    width: 100%;
+  }
+  .menu__datos {
+    display: grid;
+    gap: 4px;
+    font-size: var(--t-sm);
+    color: var(--titanio);
+  }
+</style>

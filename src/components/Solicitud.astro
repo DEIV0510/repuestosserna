@@ -1,0 +1,437 @@
+---
+// Solicitud de repuesto: arma un mensaje de WhatsApp con los datos del vehículo.
+// No simula un buscador: no hay inventario en línea y así se dice.
+// · Validación propia (texto + ícono, nunca solo color), errores con aria-describedby.
+// · Los datos se guardan en la sesión del navegador: si vuelves de WhatsApp, siguen ahí.
+// · Sin JavaScript el botón no puede componer el mensaje; queda un enlace directo.
+// La lógica vive en src/scripts/solicitud.ts; el mensaje, en src/lib/whatsapp.ts.
+import Icono from './Icono.astro';
+import { WA } from '@/lib/whatsapp';
+import { MARCA, WHATSAPP_E164 } from '@/lib/contacto';
+
+const TIPOS = [
+  { valor: 'Suspensión', icono: 'suspension' },
+  { valor: 'Frenos', icono: 'frenos' },
+  { valor: 'Motor', icono: 'motor' },
+] as const;
+const anioMax = new Date().getFullYear() + 1;
+---
+
+<section id="repuestos" class="seccion sol sup-oscuro" aria-labelledby="sol-titulo">
+  <div class="contenedor sol__grid">
+    <div class="sol__intro">
+      <p class="rotulo revela"><span class="trazo"></span>Solicitud de repuesto</p>
+      <h2 id="sol-titulo" class="titulo titulo--2 revela">Cotiza tu repuesto por WhatsApp</h2>
+      <p class="entrada revela" style="--orden:1">
+        Completa los datos de tu vehículo y te llevamos a WhatsApp con el mensaje listo para enviar.
+      </p>
+      <p class="sol__nota revela" id="sol-nota" style="--orden:2">
+        <Icono nombre="alerta" />
+        <span>
+          Esto es una solicitud de cotización, no una tienda en línea: no consultamos un inventario automático. El equipo
+          revisa tu mensaje y te orienta con la referencia y el precio.
+        </span>
+      </p>
+
+      <figure class="ticket revela" style="--orden:3" aria-labelledby="ticket-titulo">
+        <figcaption id="ticket-titulo" class="ticket__cabeza">
+          <span>Vista previa del mensaje</span>
+          <span class="ticket__para">Para: {MARCA.nombre}</span>
+        </figcaption>
+        <pre class="ticket__cuerpo" data-ticket>{`Hola, ${MARCA.nombre}. Quiero consultar disponibilidad de un repuesto.
+Tipo: ____.
+Marca del vehículo: ____.
+Modelo: ____.
+Año: ____.
+¿Me pueden ayudar con la referencia y el precio?`}</pre>
+      </figure>
+    </div>
+
+    <form class="form revela" id="solicitud" novalidate aria-describedby="sol-nota" data-numero={WHATSAPP_E164} data-anio-max={anioMax}>
+      <p class="form__resumen" role="alert" data-resumen hidden></p>
+
+      <fieldset class="campo campo--tipo" aria-describedby="e-tipo">
+        <legend class="campo__etiqueta"><span class="num">01</span> Tipo de repuesto</legend>
+        <div class="opciones">
+          {
+            TIPOS.map((t) => (
+              <label class="opcion">
+                <input type="radio" name="tipo" value={t.valor} required />
+                <span class="opcion__caja">
+                  <Icono nombre={t.icono} />
+                  {t.valor}
+                </span>
+              </label>
+            ))
+          }
+        </div>
+        <p class="campo__error" id="e-tipo" data-error="tipo" hidden></p>
+      </fieldset>
+
+      <div class="form__fila">
+        <div class="campo">
+          <label class="campo__etiqueta" for="f-marca"><span class="num">02</span> Marca del vehículo</label>
+          <input class="campo__control" id="f-marca" name="marca" type="text" required maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" aria-describedby="e-marca" />
+          <p class="campo__error" id="e-marca" data-error="marca" hidden></p>
+        </div>
+        <div class="campo">
+          <label class="campo__etiqueta" for="f-modelo"><span class="num">03</span> Modelo</label>
+          <input class="campo__control" id="f-modelo" name="modelo" type="text" required maxlength="40" autocomplete="off" autocapitalize="words" spellcheck="false" aria-describedby="e-modelo" />
+          <p class="campo__error" id="e-modelo" data-error="modelo" hidden></p>
+        </div>
+      </div>
+
+      <div class="campo campo--anio">
+        <label class="campo__etiqueta" for="f-anio"><span class="num">04</span> Año</label>
+        <input class="campo__control num" id="f-anio" name="anio" type="text" inputmode="numeric" required maxlength="4" pattern="[0-9]{4}" autocomplete="off" placeholder="Ej.: 2015" aria-describedby="e-anio" />
+        <p class="campo__error" id="e-anio" data-error="anio" hidden></p>
+      </div>
+
+      <div class="campo">
+        <label class="campo__etiqueta" for="f-detalle">
+          <span class="num">05</span> Detalle <span class="campo__opcional">(opcional)</span>
+        </label>
+        <textarea class="campo__control campo__control--area" id="f-detalle" name="detalle" rows="3" maxlength="280" placeholder="Ej.: amortiguador trasero, lado derecho" aria-describedby="c-detalle"></textarea>
+        <p class="campo__ayuda num" id="c-detalle" data-contador aria-live="off">0 / 280</p>
+      </div>
+
+      <div class="form__envio">
+        <button class="btn btn--primario form__boton" type="submit" data-enviar>
+          <Icono nombre="whatsapp" />
+          <span data-enviar-texto>Enviar solicitud por WhatsApp</span>
+        </button>
+        <p class="form__estado" role="status" data-estado></p>
+        <noscript>
+          <p class="form__estado">
+            Para armar el mensaje se necesita JavaScript.
+            <a href={WA.general} target="_blank" rel="noopener">Escríbenos directamente por WhatsApp</a>.
+          </p>
+        </noscript>
+      </div>
+    </form>
+  </div>
+</section>
+
+<style>
+  .sol {
+    background: var(--grafito);
+    border-top: 1px solid var(--acero);
+  }
+  .sol__grid {
+    display: grid;
+    gap: var(--s-7);
+  }
+  .sol__intro {
+    display: grid;
+    align-content: start;
+    gap: var(--s-4);
+  }
+  .sol__intro .titulo {
+    max-width: 13ch;
+  }
+  .sol__nota {
+    display: flex;
+    gap: var(--s-3);
+    max-width: 52ch;
+    padding: var(--s-4);
+    border-left: 2px solid var(--azul-vivo);
+    background: var(--grafito-2);
+    font-size: var(--t-sm);
+    color: var(--plata);
+  }
+  .sol__nota .icono {
+    width: 20px;
+    height: 20px;
+    color: var(--azul-luz);
+  }
+
+  /* Vista previa: hoja técnica del mensaje que se enviará. */
+  .ticket {
+    display: none;
+    margin-top: var(--s-4);
+    border: 1px solid var(--acero);
+    background:
+      linear-gradient(var(--acero), var(--acero)) 0 44px / 100% 1px no-repeat,
+      var(--grafito-0);
+  }
+  .ticket__cabeza {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    height: 44px;
+    align-items: center;
+    padding: 0 var(--s-4);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--titanio);
+  }
+  .ticket__para {
+    color: var(--azul-luz);
+    letter-spacing: 0.08em;
+  }
+  .ticket__cuerpo {
+    margin: 0;
+    padding: var(--s-5) var(--s-4);
+    font-family: var(--font-text);
+    font-size: var(--t-sm);
+    line-height: 1.75;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--plata);
+  }
+
+  /* ---------- Formulario ---------- */
+  .form {
+    display: grid;
+    gap: var(--s-5);
+    padding: clamp(20px, 4vw, 40px);
+    background: var(--grafito-2);
+    border: 1px solid var(--acero);
+    position: relative;
+  }
+  /* Esquinas de registro: detalle de plano técnico. */
+  .form::before,
+  .form::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: var(--azul-vivo);
+    border-style: solid;
+    pointer-events: none;
+  }
+  .form::before {
+    top: -1px;
+    left: -1px;
+    border-width: 2px 0 0 2px;
+  }
+  .form::after {
+    right: -1px;
+    bottom: -1px;
+    border-width: 0 2px 2px 0;
+  }
+  .form__resumen {
+    padding: var(--s-3) var(--s-4);
+    border-left: 3px solid var(--error);
+    background: rgb(255 138 122 / 0.08);
+    color: var(--blanco);
+    font-size: var(--t-sm);
+    font-weight: 500;
+  }
+  .form__fila {
+    display: grid;
+    gap: var(--s-5);
+  }
+  @media (min-width: 600px) {
+    .form__fila {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .campo {
+    display: grid;
+    gap: var(--s-2);
+    min-width: 0;
+    border: 0;
+    padding: 0;
+  }
+  .campo__etiqueta {
+    padding: 0;
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--blanco);
+  }
+  .campo__etiqueta .num {
+    margin-right: 6px;
+    font-size: var(--t-xs);
+    letter-spacing: 0.1em;
+    color: var(--azul-luz);
+  }
+  .campo--tipo .campo__etiqueta {
+    margin-bottom: var(--s-2);
+  }
+  .campo__opcional {
+    font-weight: 400;
+    color: var(--titanio);
+  }
+  .campo__control {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 14px;
+    border: 1px solid var(--acero);
+    border-radius: 0;
+    background: var(--grafito);
+    color: var(--blanco);
+    font-size: 1rem; /* ≥ 16 px: iOS no hace zoom al enfocar */
+    transition:
+      border-color var(--t-rapida) ease,
+      box-shadow var(--t-rapida) ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .campo__control::placeholder {
+    color: #6f7883;
+  }
+  .campo__control:hover {
+    border-color: #48515c;
+  }
+  .campo__control:focus-visible {
+    outline: none;
+    border-color: var(--azul-luz);
+    box-shadow: inset 0 -2px 0 var(--azul-vivo);
+  }
+  .campo__control[aria-invalid='true'] {
+    border-color: var(--error);
+  }
+  .campo__control--area {
+    min-height: 96px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .campo--anio {
+    max-width: 220px;
+  }
+  .campo__ayuda {
+    justify-self: end;
+    font-size: var(--t-xs);
+    color: var(--titanio);
+  }
+  .campo__error {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: var(--t-sm);
+    color: var(--error);
+  }
+  .campo__error::before {
+    content: '';
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
+    background: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 1 21h22L12 2Zm-1 7h2v6h-2V9Zm0 8h2v2h-2v-2Z'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+
+  /* Tipo: control segmentado (radios reales, accesibles con teclado) */
+  .opciones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .opcion {
+    position: relative;
+    display: block;
+  }
+  .opcion input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .opcion__caja {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 84px;
+    padding: 12px 6px;
+    border: 1px solid var(--acero);
+    background: var(--grafito);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    text-align: center;
+    color: var(--plata);
+    transition:
+      border-color var(--t-rapida) ease,
+      background-color var(--t-rapida) ease,
+      color var(--t-rapida) ease;
+    pointer-events: none;
+  }
+  .opcion__caja .icono {
+    width: 26px;
+    height: 26px;
+    color: var(--titanio);
+    transition: color var(--t-rapida) ease;
+  }
+  .opcion:hover .opcion__caja {
+    border-color: #48515c;
+    color: var(--blanco);
+  }
+  .opcion input:checked + .opcion__caja {
+    border-color: var(--azul-vivo);
+    background: rgb(0 58 249 / 0.16);
+    color: var(--blanco);
+    box-shadow: inset 0 -3px 0 var(--azul-vivo);
+  }
+  .opcion input:checked + .opcion__caja .icono {
+    color: var(--azul-luz);
+  }
+  .opcion input:focus-visible + .opcion__caja {
+    outline: 2px solid var(--foco);
+    outline-offset: 2px;
+  }
+  .campo--tipo[aria-invalid='true'] .opcion__caja {
+    border-color: var(--error);
+  }
+
+  .form__envio {
+    display: grid;
+    gap: var(--s-3);
+    padding-top: var(--s-2);
+  }
+  .form__boton {
+    width: 100%;
+    --btn-alto: 58px;
+  }
+  .form__boton[aria-busy='true'] {
+    background: var(--azul-profundo);
+  }
+  .form__boton[aria-busy='true']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--azul-vivo);
+    transform-origin: 0 50%;
+    animation: form-cargando 700ms var(--ease-out) forwards;
+  }
+  @keyframes form-cargando {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  .form__estado {
+    min-height: 1.5em;
+    font-size: var(--t-sm);
+    color: var(--plata);
+  }
+  .form__estado :global(a) {
+    color: var(--azul-luz);
+    font-weight: 600;
+  }
+
+  @media (min-width: 1024px) {
+    .sol__grid {
+      grid-template-columns: 5fr 6fr;
+      gap: clamp(48px, 6vw, 96px);
+      align-items: start;
+    }
+    .sol__intro {
+      position: sticky;
+      top: calc(var(--header-h) + var(--s-6));
+    }
+    .ticket {
+      display: block;
+    }
+  }
+</style>

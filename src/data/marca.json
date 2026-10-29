@@ -1,0 +1,102 @@
+{
+  "completo": {
+    "w": 1018,
+    "h": 801,
+    "avif": [
+      [
+        "/marca/logo-completo-320.565f711e.avif",
+        320
+      ],
+      [
+        "/marca/logo-completo-440.922f27e6.avif",
+        440
+      ],
+      [
+        "/marca/logo-completo-640.d49defbf.avif",
+        640
+      ],
+      [
+        "/marca/logo-completo-880.ae11cb5e.avif",
+        880
+      ],
+      [
+        "/marca/logo-completo-1018.a539af9c.avif",
+        1018
+      ]
+    ],
+    "webp": [
+      [
+        "/marca/logo-completo-320.91e26fef.webp",
+        320
+      ],
+      [
+        "/marca/logo-completo-440.e92591da.webp",
+        440
+      ],
+      [
+        "/marca/logo-completo-640.15d8f87d.webp",
+        640
+      ],
+      [
+        "/marca/logo-completo-880.f01ae248.webp",
+        880
+      ],
+      [
+        "/marca/logo-completo-1018.8153b3e6.webp",
+        1018
+      ]
+    ]
+  },
+  "principal": {
+    "w": 1002,
+    "h": 563,
+    "avif": [
+      [
+        "/marca/logo-principal-104.3d353b0e.avif",
+        104
+      ],
+      [
+        "/marca/logo-principal-160.a0f10c3d.avif",
+        160
+      ],
+      [
+        "/marca/logo-principal-208.30c0b3c7.avif",
+        208
+      ],
+      [
+        "/marca/logo-principal-312.3a8956fc.avif",
+        312
+      ],
+      [
+        "/marca/logo-principal-416.e9e197c0.avif",
+        416
+      ]
+    ],
+    "webp": [
+      [
+        "/marca/logo-principal-104.d3de7baf.webp",
+        104
+      ],
+      [
+        "/marca/logo-principal-160.4c05fc5e.webp",
+        160
+      ],
+      [
+        "/marca/logo-principal-208.8b36cc0b.webp",
+        208
+      ],
+      [
+        "/marca/logo-principal-312.d84b0397.webp",
+        312
+      ],
+      [
+        "/marca/logo-principal-416.b880514e.webp",
+        416
+      ]
+    ]
+  },
+  "colores": {
+    "azul": "#003af9",
+    "plata": "#e6e2e3"
+  }
+}

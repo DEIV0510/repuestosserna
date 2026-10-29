@@ -1,0 +1,175 @@
+---
+// Pie: logo completo, especialidades, navegación y contacto. Sin enlaces legales ficticios.
+// El año se escribe en el build y el script lo actualiza en el navegador.
+import Logo from './Logo.astro';
+import { NAV } from '@/lib/nav';
+import { WA } from '@/lib/whatsapp';
+import { DIRECCION, FACEBOOK, INSTAGRAM, MARCA, WHATSAPP_VISIBLE } from '@/lib/contacto';
+
+const ESPECIALIDADES = [
+  { id: 'suspension', texto: 'Suspensión' },
+  { id: 'frenos', texto: 'Frenos' },
+  { id: 'motor', texto: 'Motor' },
+];
+---
+
+<footer class="pie sup-oscuro">
+  <div class="contenedor">
+    <div class="pie__grid">
+      <div class="pie__marca">
+        <Logo version="completo" ancho={220} />
+        <p>Repuestos para suspensión, frenos y motor en {DIRECCION.ciudad}, {DIRECCION.departamento}.</p>
+      </div>
+
+      <nav class="pie__col" aria-labelledby="pie-esp">
+        <h2 id="pie-esp" class="pie__titulo">Especialidades</h2>
+        <ul>
+          {
+            ESPECIALIDADES.map((e) => (
+              <li>
+                <a href={`/#${e.id}`}>{e.texto}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav class="pie__col" aria-labelledby="pie-nav">
+        <h2 id="pie-nav" class="pie__titulo">Navegación</h2>
+        <ul>
+          {
+            NAV.map((n) => (
+              <li>
+                <a href={`/#${n.id}`}>{n.texto}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="pie__col">
+        <h2 class="pie__titulo">Contacto</h2>
+        <address>
+          <span>{DIRECCION.calle}</span>
+          <span>{DIRECCION.sector}</span>
+          <span>{DIRECCION.ciudad}, {DIRECCION.departamento}, {DIRECCION.pais}</span>
+        </address>
+        <ul>
+          <li>
+            <a href={WA.general} target="_blank" rel="noopener" data-cta="pie">
+              {`WhatsApp ${WHATSAPP_VISIBLE}`}
+            </a>
+          </li>
+          <li><a href={INSTAGRAM.url} target="_blank" rel="noopener" data-cta="instagram-pie">{`Instagram ${INSTAGRAM.usuario}`}</a></li>
+          <li>
+            {
+              FACEBOOK.url ? (
+                <a href={FACEBOOK.url} target="_blank" rel="noopener" data-cta="facebook-pie">
+                  Facebook · {FACEBOOK.nombre}
+                </a>
+              ) : (
+                <span class="pie__texto">Facebook · {FACEBOOK.nombre}</span>
+              )
+            }
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pie__base">
+      <p>© <span class="num" data-anio>{new Date().getFullYear()}</span> {MARCA.nombre}. Todos los derechos reservados.</p>
+      <p class="pie__eslogan">{MARCA.eslogan}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .pie {
+    background: var(--grafito-0);
+    border-top: 1px solid var(--acero);
+    padding-block: clamp(56px, 7vw, 96px) max(var(--s-6), env(safe-area-inset-bottom));
+    font-size: var(--t-sm);
+    color: var(--titanio);
+  }
+  .pie__grid {
+    display: grid;
+    gap: var(--s-7) var(--s-6);
+  }
+  .pie__marca {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+    max-width: 300px;
+  }
+  .pie__titulo {
+    margin-bottom: var(--s-3);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--blanco);
+  }
+  .pie__col ul {
+    display: grid;
+  }
+  .pie__col a,
+  .pie__texto {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    text-decoration: none;
+    color: var(--plata);
+  }
+  .pie__texto {
+    color: var(--titanio);
+  }
+  .pie__col a:hover {
+    color: var(--blanco);
+    text-decoration: underline;
+    text-decoration-color: var(--azul-vivo);
+    text-underline-offset: 4px;
+  }
+  .pie address {
+    display: grid;
+    margin-bottom: var(--s-2);
+    font-style: normal;
+    line-height: 1.7;
+  }
+  .pie__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--s-2) var(--s-5);
+    margin-top: var(--s-8);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--acero);
+    font-size: var(--t-xs);
+  }
+  .pie__eslogan {
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 640px) {
+    .pie__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .pie__marca {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 1024px) {
+    .pie__grid {
+      grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+    }
+    .pie__marca {
+      grid-column: auto;
+    }
+  }
+  /* Espacio para el botón flotante de WhatsApp en móvil: no tapa el pie. */
+  @media (max-width: 899.98px) {
+    .pie {
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
+    }
+  }
+</style>

@@ -1,0 +1,456 @@
+/* ==========================================================================
+   SERNA REPUESTOS — sistema de diseño
+   Concepto: ingeniería, precisión y movimiento.
+   · Azul y plata medidos en el logo; grafito y niebla como superficies.
+   · Un solo ángulo para todo el sistema: 12° (la inclinación del nombre SERNA).
+   · Trazo afilado azul (las líneas que flanquean REPUESTOS en el logo) como marcador.
+   · Esquinas rectas: seriedad técnica.
+   ========================================================================== */
+
+:root {
+  /* Marca (medido en el logo: azul #003af9, plata #e6e2e3) */
+  --azul: #003af9;
+  --azul-vivo: #1f55ff;
+  --azul-profundo: #071c63;
+  --azul-luz: #6b93ff; /* azul legible sobre grafito (5,9:1) */
+  --plata: #d9dce0;
+
+  /* Superficies */
+  --grafito-0: #08090b;
+  --grafito: #0c0e11;
+  --grafito-2: #13161a;
+  --grafito-3: #1a1e23;
+  --acero: #2c333b;
+  --titanio: #98a1ab;
+  --niebla: #e9ecef;
+  --claro: #f3f4f6;
+  --blanco: #ffffff;
+  --tinta: #0d1014;
+  --tinta-2: #4a525c;
+
+  --error-osc: #ff8a7a;
+  --error-clr: #b42318;
+
+  /* Tipografía (familias en fuentes.css) */
+  --t-xs: 0.75rem;
+  --t-sm: 0.875rem;
+  --t-base: 1rem;
+  --t-md: 1.125rem;
+  --t-lg: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  --t-xl: clamp(1.6rem, 1.15rem + 1.6vw, 2.35rem);
+  --t-2xl: clamp(2rem, 1.2rem + 2.9vw, 3.5rem);
+  --t-hero: clamp(2.15rem, 0.6rem + 3.3vw, 4rem);
+
+  /* Espaciado y medidas */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --sec: clamp(72px, 9vw, 136px);
+  --gutter: clamp(16px, 4.2vw, 56px);
+  --max: 1320px;
+  --header-h: 64px;
+
+  /* Geometría */
+  --angulo: 12deg;
+  --tg: 0.2126; /* tan(12°) */
+  --borde: 1px;
+
+  /* Sombras: solo para separar capas flotantes (menú, botón flotante) */
+  --sombra-flotante: 0 10px 30px -10px rgb(0 0 0 / 0.55);
+
+  /* Movimiento */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-rapida: 180ms;
+  --t-media: 360ms;
+  --t-lenta: 720ms;
+
+  color-scheme: dark;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --header-h: 76px;
+  }
+}
+
+/* Superficies: cada sección declara la suya y los componentes leen estas variables. */
+.sup-oscuro,
+:root {
+  --fondo: var(--grafito);
+  --texto: var(--blanco);
+  --texto-2: var(--titanio);
+  --linea: var(--acero);
+  --acento-texto: var(--azul-luz);
+  --foco: var(--azul-luz);
+  --error: var(--error-osc);
+}
+.sup-oscuro {
+  background: var(--fondo);
+  color: var(--texto);
+}
+.sup-grafito-2 {
+  --fondo: var(--grafito-2);
+}
+.sup-claro {
+  --fondo: var(--claro);
+  --texto: var(--tinta);
+  --texto-2: var(--tinta-2);
+  --linea: #cfd4da;
+  --acento-texto: var(--azul);
+  --foco: var(--azul);
+  --error: var(--error-clr);
+  background: var(--fondo);
+  color: var(--texto);
+  color-scheme: light;
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: var(--header-h);
+  overflow-anchor: none;
+  scrollbar-gutter: stable;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+/* Menú móvil abierto: la página de fondo no se desplaza (clase que pone el script). */
+html.is-menu {
+  overflow: hidden;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--grafito);
+  color: var(--blanco);
+  font-family: var(--font-text);
+  font-size: var(--t-base);
+  line-height: 1.6;
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+img,
+svg,
+picture {
+  display: block;
+  max-width: 100%;
+}
+img {
+  height: auto;
+}
+a {
+  color: inherit;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+figure,
+fieldset,
+dl,
+dd {
+  margin: 0;
+}
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.saltar {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 300;
+  padding: 12px 18px;
+  background: var(--blanco);
+  color: var(--tinta);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform var(--t-rapida) var(--ease-out);
+}
+.saltar:focus-visible {
+  transform: none;
+}
+
+main:focus {
+  outline: none;
+}
+
+/* ---------- Diseño ---------- */
+.contenedor {
+  width: 100%;
+  max-width: calc(var(--max) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.seccion {
+  padding-block: var(--sec);
+  position: relative;
+}
+
+/* ---------- Tipografía ---------- */
+.titulo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 106%;
+  text-transform: uppercase;
+  line-height: 0.98;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+.titulo--2 {
+  font-size: var(--t-2xl);
+}
+.titulo--3 {
+  font-size: var(--t-lg);
+  font-stretch: 106%;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+.entrada {
+  font-size: var(--t-md);
+  line-height: 1.6;
+  color: var(--texto-2);
+  max-width: 54ch;
+  text-wrap: pretty;
+}
+
+/* Rótulo técnico: trazo afilado + texto en mayúsculas espaciadas (sin cápsula). */
+.rotulo {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--texto-2);
+}
+.trazo {
+  flex: none;
+  display: inline-block;
+  margin-top: calc(0.8em - 2px); /* centrado en la primera línea, aunque el rótulo se parta */
+  width: 36px;
+  height: 4px;
+  background: var(--azul);
+  clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 60%);
+}
+.sup-oscuro .trazo {
+  background: linear-gradient(90deg, var(--azul), var(--azul-vivo));
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  --btn-alto: 52px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: var(--btn-alto);
+  padding: 0 22px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  font-family: var(--font-text);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    background-color var(--t-rapida) ease,
+    border-color var(--t-rapida) ease,
+    color var(--t-rapida) ease,
+    transform var(--t-rapida) ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn .icono {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  transition: transform var(--t-media) var(--ease-out);
+}
+.btn--primario {
+  background: var(--azul);
+  color: var(--blanco);
+}
+/* Barrido inclinado a 12° al pasar el cursor: la «línea de precisión» cruza el botón. */
+.btn--primario::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--azul-vivo);
+  transform: translateX(-102%) skewX(calc(var(--angulo) * -1));
+  transform-origin: 0 100%;
+  transition: transform var(--t-media) var(--ease-out);
+}
+.btn--secundario {
+  border-color: color-mix(in srgb, var(--texto) 32%, transparent);
+  color: var(--texto);
+  background: transparent;
+}
+@media (hover: hover) {
+  .btn--primario:hover::before {
+    transform: translateX(0) skewX(0deg);
+  }
+  .btn--primario:hover .icono--flecha {
+    transform: translateX(4px);
+  }
+  .btn--secundario:hover {
+    border-color: var(--texto);
+    background: color-mix(in srgb, var(--texto) 6%, transparent);
+  }
+  .btn--secundario:hover .icono--abajo {
+    transform: translateY(3px);
+  }
+}
+.btn[aria-busy='true'] {
+  cursor: progress;
+}
+
+/* Enlace de acción con flecha (bloques) */
+.enlace-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--texto);
+}
+.enlace-accion .icono {
+  width: 18px;
+  height: 18px;
+  color: var(--acento-texto);
+  transition: transform var(--t-media) var(--ease-out);
+}
+
+/* ---------- Iconos ---------- */
+.icono {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+.icono--relleno {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* ---------- Fotos ---------- */
+.foto {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--foto-bg, var(--grafito-3));
+}
+.foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.foto--error img {
+  visibility: hidden;
+}
+
+/* ---------- Aparición al entrar en pantalla ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .is-app .revela {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 700ms var(--ease-out),
+      transform 900ms var(--ease-out);
+    transition-delay: calc(var(--orden, 0) * 90ms);
+  }
+  .is-app .revela.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Línea técnica que se dibuja al entrar (de izquierda a derecha) */
+.regla {
+  display: block;
+  height: 1px;
+  background: var(--linea);
+  transform-origin: 0 50%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .is-app .regla.revela {
+    opacity: 1;
+    transform: scaleX(0);
+    transition: transform 1100ms var(--ease-out);
+  }
+  .is-app .regla.revela.is-visible {
+    transform: scaleX(1);
+  }
+}

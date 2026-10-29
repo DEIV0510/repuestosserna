@@ -1,0 +1,65 @@
+---
+// Botón flotante de WhatsApp: discreto (cuadrado, azul de marca). Aparece al salir del hero
+// y se oculta donde ya hay un botón propio (solicitud y contacto) para no tapar controles.
+import Icono from './Icono.astro';
+import { WA } from '@/lib/whatsapp';
+---
+
+<a class="wa-flotante" href={WA.general} target="_blank" rel="noopener" data-cta="flotante" data-flotante>
+  <Icono nombre="whatsapp" />
+  <span class="sr-only">Escribir a Serna Repuestos por WhatsApp</span>
+</a>
+
+<style>
+  .wa-flotante {
+    position: fixed;
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    background: var(--azul);
+    color: var(--blanco);
+    box-shadow: var(--sombra-flotante);
+    transition:
+      transform var(--t-media) var(--ease-out),
+      opacity var(--t-media) ease,
+      visibility 0s linear var(--t-media),
+      background-color var(--t-rapida) ease;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(16px);
+  }
+  .wa-flotante .icono {
+    width: 26px;
+    height: 26px;
+  }
+  /* Filo inclinado: el mismo corte de 12° del sistema, en la esquina superior. */
+  .wa-flotante::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 3px;
+    background: var(--blanco);
+    opacity: 0.85;
+  }
+  .wa-flotante:hover {
+    background: var(--azul-vivo);
+  }
+  /* Sin JS (o antes de que cargue) se muestra siempre. */
+  :global(html:not(.is-js)) .wa-flotante,
+  .wa-flotante[data-visible='true'] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+  .wa-flotante:focus-visible {
+    outline-color: var(--blanco);
+    outline-offset: 3px;
+  }
+</style>

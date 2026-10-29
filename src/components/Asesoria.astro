@@ -1,0 +1,159 @@
+---
+// Bloque comercial: por qué consultar con Serna. Solo conceptos del brief, sin promesas
+// (tiempos, garantías ni políticas). Foto real del local (fotograma del video de apertura).
+import Foto from './Foto.astro';
+import Icono from './Icono.astro';
+import { WA } from '@/lib/whatsapp';
+import { DIRECCION } from '@/lib/contacto';
+
+const PUNTOS = [
+  {
+    icono: 'persona',
+    titulo: 'Atención personalizada',
+    texto: 'Revisamos tu consulta con los datos de tu vehículo.',
+  },
+  {
+    icono: 'referencia',
+    titulo: 'Orientación para identificar el repuesto',
+    texto: 'Si no tienes la referencia, cuéntanos qué necesitas y te ayudamos a ubicarla.',
+  },
+  {
+    icono: 'chat',
+    titulo: 'Consulta directa por WhatsApp',
+    texto: 'Escribe desde tu celular y resuelve la consulta en el mismo chat.',
+  },
+  {
+    icono: 'local',
+    titulo: 'Atención en nuestro establecimiento',
+    texto: `También puedes visitarnos en ${DIRECCION.calle}, ${DIRECCION.sector}.`,
+  },
+] as const;
+---
+
+<section id="asesoria" class="seccion ase sup-claro" aria-labelledby="ase-titulo">
+  <div class="contenedor ase__grid">
+    <figure class="ase__figura revela">
+      <Foto id="local-asesor" class="ase__foto" sizes="(min-width: 1024px) 34vw, (min-width: 600px) 60vw, 100vw" />
+      <figcaption class="ase__pie">
+        <span class="trazo"></span>
+        En nuestro punto de {DIRECCION.ciudad}
+      </figcaption>
+    </figure>
+
+    <div class="ase__contenido">
+      <p class="rotulo revela"><span class="trazo"></span>Asesoría</p>
+      <h2 id="ase-titulo" class="titulo titulo--2 ase__titulo revela">Encontrar tu repuesto empieza con una buena asesoría.</h2>
+      <p class="entrada revela" style="--orden:1">
+        Cuéntanos qué repuesto necesitas y los datos de tu vehículo. Nuestro equipo podrá orientarte en tu consulta.
+      </p>
+
+      <ul class="ase__puntos">
+        {
+          PUNTOS.map((p, i) => (
+            <li class="ase__punto revela" style={`--orden:${i}`}>
+              <Icono nombre={p.icono} />
+              <div>
+                <h3 class="ase__punto-titulo">{p.titulo}</h3>
+                <p>{p.texto}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a class="btn btn--primario ase__cta revela" href={WA.asesor} target="_blank" rel="noopener" data-cta="asesoria">
+        <Icono nombre="whatsapp" />
+        Hablar con un asesor
+        <Icono nombre="flecha" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ase__grid {
+    display: grid;
+    gap: var(--s-7);
+  }
+  .ase__figura {
+    position: relative;
+    max-width: 520px;
+  }
+  .ase__foto {
+    aspect-ratio: 9 / 10;
+  }
+  /* Marco técnico desplazado: línea azul que enmarca la foto por detrás. */
+  .ase__figura::before {
+    content: '';
+    position: absolute;
+    inset: 16px -16px -16px 16px;
+    border: 1px solid var(--azul);
+    z-index: -1;
+  }
+  .ase__figura {
+    isolation: isolate;
+  }
+  .ase__pie {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: calc(var(--s-5) + 16px);
+    font-size: var(--t-sm);
+    color: var(--tinta-2);
+  }
+  .ase__contenido {
+    display: grid;
+    gap: var(--s-4);
+    align-content: center;
+  }
+  .ase__titulo {
+    max-width: 18ch;
+  }
+  .ase__puntos {
+    display: grid;
+    margin-block: var(--s-4) var(--s-5);
+    border-top: 1px solid var(--linea);
+  }
+  .ase__punto {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--s-4);
+    padding: var(--s-5) 0;
+    border-bottom: 1px solid var(--linea);
+  }
+  .ase__punto .icono {
+    width: 28px;
+    height: 28px;
+    color: var(--azul);
+  }
+  .ase__punto-titulo {
+    font-size: var(--t-base);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .ase__punto p {
+    margin-top: 4px;
+    font-size: var(--t-sm);
+    color: var(--tinta-2);
+  }
+  .ase__cta {
+    justify-self: start;
+  }
+
+  @media (min-width: 700px) {
+    .ase__puntos {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--s-6);
+    }
+  }
+  @media (min-width: 1024px) {
+    .ase__grid {
+      grid-template-columns: 5fr 7fr;
+      gap: clamp(48px, 7vw, 112px);
+      align-items: center;
+    }
+    .ase__figura {
+      max-width: none;
+    }
+  }
+</style>

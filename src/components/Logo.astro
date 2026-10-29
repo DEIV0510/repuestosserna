@@ -1,0 +1,48 @@
+---
+// Logo oficial (raster del original con el negro convertido en transparencia; ver
+// scripts/marca.mjs). Siempre con su proporción real: se fija el alto o el ancho y el
+// otro lado sale del archivo. Pensado para superficies oscuras, como el original.
+import { logoData, type LogoVersion } from '@/lib/media';
+
+interface Props {
+  version: LogoVersion;
+  /** Ancho en px CSS con que se muestra (para sizes y la proporción). */
+  ancho: number;
+  sizes?: string;
+  /** Sin texto alternativo: lo nombra el enlace o es decorativo. */
+  decorativo?: boolean;
+  /** En el primer pantallazo: carga inmediata (sin prioridad alta: esa es de la foto principal). */
+  eager?: boolean;
+  class?: string;
+}
+
+const { version, ancho, sizes, decorativo = false, eager = false, class: cls } = Astro.props;
+const d = logoData(version);
+const alto = Math.round((ancho * d.height) / d.width);
+const alt = version === 'completo' ? 'Serna Repuestos — Calidad que se siente en cada recorrido' : 'Serna Repuestos';
+---
+
+<picture class:list={['logo', cls]} style={`--logo-ancho:${ancho}px`}>
+  <source type="image/avif" srcset={d.avif} sizes={sizes ?? `${ancho}px`} />
+  <source type="image/webp" srcset={d.webp} sizes={sizes ?? `${ancho}px`} />
+  <img
+    src={d.src}
+    width={ancho}
+    height={alto}
+    alt={decorativo ? '' : alt}
+    loading={eager ? 'eager' : 'lazy'}
+    decoding="async"
+  />
+</picture>
+
+<style>
+  /* :where → especificidad 0: quien usa el logo puede fijar otro ancho con su clase. */
+  :where(.logo) {
+    width: var(--logo-ancho);
+    max-width: 100%;
+  }
+  .logo img {
+    width: 100%;
+    height: auto;
+  }
+</style>

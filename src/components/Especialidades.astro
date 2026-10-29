@@ -1,0 +1,264 @@
+---
+// Especialidades: tres bloques diferenciados sobre superficie clara.
+// Suspensión encabeza (bloque grande): es la línea que la propia tienda nombra primero en
+// su video de apertura (amortiguadores, terminales y brazos de dirección). Frenos y Motor
+// van apilados a la derecha, con la foto del lado opuesto para que no sean tarjetas iguales.
+// Todo el bloque es clicable (enlace extendido) y abre WhatsApp con el mensaje del sistema.
+import Foto from './Foto.astro';
+import Icono from './Icono.astro';
+import { WA, type Especialidad } from '@/lib/whatsapp';
+import type { MediaId } from '@/lib/media';
+
+interface Bloque {
+  id: Especialidad;
+  nombre: string;
+  descripcion: string;
+  /** Ejemplos confirmados por la tienda (video de apertura). Sin datos, no se inventan. */
+  ejemplos: string | null;
+  foto: MediaId;
+  icono: 'suspension' | 'frenos' | 'motor';
+}
+
+const BLOQUES: Bloque[] = [
+  {
+    id: 'suspension',
+    nombre: 'Suspensión',
+    descripcion: 'Componentes para el sistema de suspensión de tu vehículo.',
+    ejemplos: 'Como amortiguadores traseros, terminales y brazos de dirección.',
+    foto: 'suspension',
+    icono: 'suspension',
+  },
+  {
+    id: 'frenos',
+    nombre: 'Frenos',
+    descripcion: 'Repuestos para el sistema de frenado.',
+    ejemplos: 'Como pastillas de freno.',
+    foto: 'frenos',
+    icono: 'frenos',
+  },
+  {
+    id: 'motor',
+    nombre: 'Motor',
+    descripcion: 'Componentes y repuestos para el motor.',
+    ejemplos: null,
+    foto: 'motor',
+    icono: 'motor',
+  },
+];
+---
+
+<section id="especialidades" class="seccion esp sup-claro" aria-labelledby="esp-titulo">
+  <div class="contenedor">
+    <header class="esp__cabeza">
+      <p class="rotulo revela"><span class="trazo"></span>Especialidades</p>
+      <h2 id="esp-titulo" class="titulo titulo--2 esp__titulo revela">Soluciones para cada componente</h2>
+      <p class="entrada esp__entrada revela" style="--orden:1">Encuentra repuestos para las áreas esenciales de tu vehículo.</p>
+    </header>
+
+    <div class="esp__grid">
+      {
+        BLOQUES.map((b, i) => (
+          <article id={b.id} class:list={['esp-bloque', `esp-bloque--${b.id}`, 'revela']} style={`--orden:${i}`} aria-labelledby={`esp-${b.id}`}>
+            <Foto
+              id={b.foto}
+              class="esp-bloque__foto"
+              sizes={i === 0 ? '(min-width: 1024px) 56vw, 100vw' : '(min-width: 1024px) 26vw, 100vw'}
+            />
+            <div class="esp-bloque__placa">
+              <span class="esp-bloque__barra" aria-hidden="true" />
+              <p class="esp-bloque__num num" aria-hidden="true">
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                <Icono nombre={b.icono} />
+              </p>
+              <h3 id={`esp-${b.id}`} class="titulo esp-bloque__nombre">
+                {b.nombre}
+              </h3>
+              <p class="esp-bloque__desc">{b.descripcion}</p>
+              {b.ejemplos && <p class="esp-bloque__ejemplos">{b.ejemplos}</p>}
+              <a class="enlace-accion esp-bloque__cta" href={WA[b.id]} target="_blank" rel="noopener" data-cta="especialidad" data-especialidad={b.id}>
+                Consultar repuestos
+                <span class="sr-only">de {b.nombre.toLowerCase()} por WhatsApp</span>
+                <Icono nombre="flecha" />
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .esp__cabeza {
+    display: grid;
+    gap: var(--s-4);
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+  .esp__titulo {
+    max-width: 14ch;
+  }
+  @media (min-width: 900px) {
+    .esp__cabeza {
+      grid-template-columns: 7fr 5fr;
+      align-items: end;
+      column-gap: var(--s-7);
+    }
+    .esp__cabeza .rotulo {
+      grid-column: 1 / -1;
+    }
+    .esp__entrada {
+      padding-bottom: 0.4em;
+    }
+  }
+
+  .esp__grid {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  /* ---------- Bloque ---------- */
+  .esp-bloque {
+    position: relative;
+    display: grid;
+    background: var(--grafito);
+    color: var(--blanco);
+    --texto: var(--blanco);
+    --texto-2: var(--titanio);
+    --acento-texto: var(--azul-luz);
+    --foco: var(--azul-luz);
+  }
+  .esp-bloque__foto {
+    aspect-ratio: 16 / 10;
+  }
+  .esp-bloque__foto :global(img) {
+    transition: transform 900ms var(--ease-out);
+  }
+  .esp-bloque__placa {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: var(--s-5) var(--s-5) var(--s-4);
+  }
+  .esp-bloque__barra {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--azul-vivo);
+    transform: scaleX(0.12);
+    transform-origin: 0 50%;
+    transition: transform var(--t-lenta) var(--ease-out);
+  }
+  .esp-bloque__num {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: var(--azul-luz);
+  }
+  .esp-bloque__num .icono {
+    width: 28px;
+    height: 28px;
+    color: var(--titanio);
+  }
+  .esp-bloque__nombre {
+    font-size: var(--t-xl);
+  }
+  .esp-bloque__desc {
+    color: var(--plata);
+    max-width: 40ch;
+  }
+  .esp-bloque__ejemplos {
+    font-size: var(--t-sm);
+    color: var(--titanio);
+    max-width: 44ch;
+  }
+  .esp-bloque__cta {
+    margin-top: auto;
+    padding-top: var(--s-2);
+  }
+  /* Enlace extendido: todo el bloque abre WhatsApp. */
+  .esp-bloque__cta::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .esp-bloque__placa {
+    position: static;
+  }
+  .esp-bloque {
+    isolation: isolate;
+  }
+  .esp-bloque:has(.esp-bloque__cta:focus-visible) {
+    outline: 2px solid var(--azul);
+    outline-offset: 4px;
+  }
+  .esp-bloque__cta:focus-visible {
+    outline: none;
+  }
+
+  @media (hover: hover) {
+    .esp-bloque:hover .esp-bloque__foto :global(img) {
+      transform: scale(1.045);
+    }
+    .esp-bloque:hover .esp-bloque__barra {
+      transform: scaleX(1);
+    }
+    .esp-bloque:hover .esp-bloque__cta .icono {
+      transform: translateX(5px);
+    }
+  }
+  .esp-bloque:focus-within .esp-bloque__barra {
+    transform: scaleX(1);
+  }
+
+  /* ---------- Composición en escritorio ---------- */
+  @media (min-width: 1024px) {
+    .esp__grid {
+      grid-template-columns: 7fr 5fr;
+      grid-template-rows: repeat(2, minmax(300px, auto));
+    }
+    /* Suspensión: foto arriba a sangre, placa sobre el borde inferior izquierdo. */
+    .esp-bloque--suspension {
+      grid-row: 1 / span 2;
+      grid-template-rows: 1fr auto;
+    }
+    .esp-bloque--suspension .esp-bloque__foto {
+      aspect-ratio: auto;
+      min-height: 420px;
+    }
+    .esp-bloque--suspension .esp-bloque__placa {
+      padding: var(--s-6) var(--s-6) var(--s-5);
+    }
+    .esp-bloque--suspension .esp-bloque__nombre {
+      font-size: var(--t-2xl);
+    }
+    /* Frenos y Motor: horizontales; la foto cambia de lado. */
+    .esp-bloque--frenos,
+    .esp-bloque--motor {
+      grid-template-columns: 1fr 1fr;
+    }
+    .esp-bloque--frenos .esp-bloque__foto,
+    .esp-bloque--motor .esp-bloque__foto {
+      aspect-ratio: auto;
+      height: 100%;
+    }
+    .esp-bloque--frenos .esp-bloque__foto {
+      order: 2;
+    }
+  }
+  /* Corte inclinado entre foto y placa en los bloques horizontales (≈12° a su alto). */
+  @media (min-width: 1024px) {
+    .esp-bloque--motor .esp-bloque__foto {
+      clip-path: polygon(0 0, 100% 0, calc(100% - 64px) 100%, 0 100%);
+    }
+    .esp-bloque--frenos .esp-bloque__foto {
+      clip-path: polygon(64px 0, 100% 0, 100% 100%, 0 100%);
+    }
+  }
+</style>
