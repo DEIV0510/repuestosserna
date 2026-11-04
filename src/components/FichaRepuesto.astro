@@ -1,0 +1,194 @@
+---
+// Ficha de un repuesto: dibujo técnico, qué es, qué tener en cuenta y «Cotizar».
+// «Cotizar» no abre WhatsApp: lleva al formulario de la misma página y lo deja lleno con
+// el sistema y el repuesto (src/scripts/solicitud.ts). Sin JS, solo baja al formulario.
+import Dibujo from './Dibujo.astro';
+import Icono from './Icono.astro';
+import { sistema, textoBusqueda, textoDescripcion, type Repuesto } from '@/data/repuestos';
+
+interface Props {
+  repuesto: Repuesto;
+  /** Muestra a qué sistema pertenece (catálogo general). */
+  conSistema?: boolean;
+  /** Nivel del título: h3 bajo el h2 del catálogo; h4 cuando hay títulos de grupo (h3). */
+  nivel?: 3 | 4;
+}
+
+const { repuesto: r, conSistema = false, nivel = 3 } = Astro.props;
+const s = sistema(r.sistema);
+const Titulo = nivel === 4 ? 'h4' : 'h3';
+---
+
+<article class="ficha" id={r.id} data-repuesto data-sistema={r.sistema} data-texto={textoBusqueda(r)} data-texto-desc={textoDescripcion(r)} aria-labelledby={`ficha-${r.id}`}>
+  <div class="ficha__plano">
+    <Dibujo id={r.dibujo} class="ficha__dibujo" />
+  </div>
+  <div class="ficha__cuerpo">
+    {
+      conSistema && (
+        <p class="ficha__sistema">
+          <Icono nombre={s.icono} />
+          {s.nombre}
+        </p>
+      )
+    }
+    <Titulo id={`ficha-${r.id}`} class="ficha__nombre">{r.nombre}</Titulo>
+    <p class="ficha__desc">{r.descripcion}</p>
+    <p class="ficha__consejo">
+      <span class="ficha__consejo-marca" aria-hidden="true"></span>
+      {r.consejo}
+    </p>
+    <a class="ficha__cotizar" href="#cotizar" data-cotizar data-tipo={s.tipo} data-nombre={r.nombre}>
+      Cotizar este repuesto
+      <span class="sr-only">: {r.nombre}</span>
+      <Icono nombre="flecha" />
+    </a>
+  </div>
+</article>
+
+<style>
+  .ficha {
+    display: flex;
+    flex-direction: column;
+    background: var(--blanco);
+    border: 1px solid #dde1e6;
+    transition:
+      border-color var(--t-rapida) ease,
+      box-shadow var(--t-media) ease;
+  }
+  /* Plano: cuadrícula técnica tenue detrás del dibujo */
+  .ficha__plano {
+    --dib-fondo: #f4f6f8;
+    position: relative;
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: center;
+    padding: 7% 9%;
+    background:
+      linear-gradient(90deg, rgb(13 16 20 / 0.045) 1px, transparent 1px) 0 0 / 20px 20px,
+      linear-gradient(rgb(13 16 20 / 0.045) 1px, transparent 1px) 0 0 / 20px 20px,
+      var(--dib-fondo);
+    border-bottom: 1px solid #dde1e6;
+    overflow: hidden;
+  }
+  .ficha__dibujo {
+    transition: transform var(--t-lenta) var(--ease-out);
+  }
+  .ficha__cuerpo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    padding: 18px 18px 6px;
+  }
+  .ficha__sistema {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--azul);
+  }
+  .ficha__sistema .icono {
+    width: 16px;
+    height: 16px;
+  }
+  .ficha__nombre {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 106%;
+    font-size: 1.125rem;
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: var(--tinta);
+  }
+  .ficha__desc {
+    font-size: var(--t-sm);
+    line-height: 1.55;
+    color: var(--tinta-2);
+  }
+  .ficha__consejo {
+    display: flex;
+    gap: 10px;
+    margin-top: 2px;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--tinta);
+  }
+  .ficha__consejo-marca {
+    flex: none;
+    width: 3px;
+    background: var(--azul);
+  }
+  .ficha__cotizar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    min-height: 52px;
+    border-top: 1px solid #e3e6ea;
+    padding-top: 2px;
+    font-size: var(--t-sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--azul);
+  }
+  .ficha__cotizar .icono {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--t-media) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .ficha:hover {
+      border-color: #b9c2cc;
+      box-shadow: 0 14px 30px -22px rgb(13 16 20 / 0.45);
+    }
+    .ficha:hover .ficha__dibujo {
+      transform: scale(1.05);
+    }
+    .ficha__cotizar:hover .icono {
+      transform: translateX(4px);
+    }
+  }
+  /* Celular: ficha horizontal (dibujo a la izquierda) para que la lista no se haga eterna. */
+  @media (max-width: 599.98px) {
+    .ficha {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+    }
+    .ficha__plano {
+      aspect-ratio: auto;
+      padding: 10px;
+      border-bottom: 0;
+      border-right: 1px solid #dde1e6;
+    }
+    .ficha__cuerpo {
+      gap: 6px;
+      padding: 14px 14px 0;
+    }
+    .ficha__nombre {
+      font-size: 1rem;
+    }
+    .ficha__desc {
+      font-size: 0.8125rem;
+    }
+    .ficha__consejo {
+      font-size: 0.75rem;
+    }
+    .ficha__cotizar {
+      min-height: 48px;
+      font-size: 0.8125rem;
+    }
+  }
+
+  /* Ficha recién elegida para cotizar */
+  .ficha.is-elegida {
+    border-color: var(--azul);
+    box-shadow: inset 0 3px 0 var(--azul);
+  }
+</style>

@@ -1,0 +1,151 @@
+---
+// Página de cada sistema: qué incluye, fichas con buscador, guía para cotizar y formulario
+// con el tipo ya marcado. WhatsApp directo queda como opción secundaria (mensaje del sistema).
+import Base from '@/layouts/Base.astro';
+import CabezaPagina from '@/components/CabezaPagina.astro';
+import Catalogo from '@/components/Catalogo.astro';
+import GuiaSistema from '@/components/GuiaSistema.astro';
+import Solicitud from '@/components/Solicitud.astro';
+import Icono from '@/components/Icono.astro';
+import { SISTEMAS, repuestosDe, type Sistema } from '@/data/repuestos';
+import { WA } from '@/lib/whatsapp';
+import { DIRECCION } from '@/lib/contacto';
+
+export function getStaticPaths() {
+  return SISTEMAS.map((s) => ({ params: { sistema: s.id }, props: { s } }));
+}
+
+const { s } = Astro.props as { s: Sistema };
+const piezas = repuestosDe(s.id);
+const nombre = s.nombre.toLowerCase();
+const otros = SISTEMAS.filter((o) => o.id !== s.id);
+const lista = piezas
+  .slice(0, 4)
+  .map((p) => p.nombre.toLowerCase())
+  .join(', ');
+---
+
+<Base
+  title={`Repuestos de ${nombre} en ${DIRECCION.ciudad} | Serna Repuestos`}
+  description={`Repuestos de ${nombre}: ${lista} y más. Conoce cada pieza y cotízala con los datos de tu vehículo en Serna Repuestos, ${DIRECCION.ciudad}.`}
+>
+  <CabezaPagina
+    rotulo={`Especialidad · ${s.nombre}`}
+    titulo={`Repuestos de ${nombre}`}
+    entrada={s.funcion}
+    foto={s.foto}
+    migas={[{ texto: 'Inicio', href: '/' }, { texto: 'Repuestos', href: '/repuestos/' }, { texto: s.nombre }]}
+  >
+    <Fragment slot="acciones">
+      <a class="btn btn--primario" href="#catalogo">
+        Ver los {piezas.length} repuestos
+        <Icono nombre="abajo" />
+      </a>
+      <a class="btn btn--secundario" href={WA[s.id]} target="_blank" rel="noopener" data-cta="sistema-whatsapp" data-especialidad={s.id}>
+        <Icono nombre="whatsapp" />
+        Preguntar por WhatsApp
+      </a>
+    </Fragment>
+  </CabezaPagina>
+
+  <Catalogo sistemas={[s.id]} titulo={`Repuestos de ${nombre}`} accion={`/repuestos/${s.id}/`} />
+
+  <GuiaSistema sistema={s} />
+
+  <Solicitud
+    titulo={`Cotiza tu repuesto de ${nombre}`}
+    entrada="Elige un repuesto de la lista o escríbelo tú, completa los datos de tu vehículo y te llevamos a WhatsApp con el mensaje listo."
+    tipoInicial={s.tipo}
+  />
+
+  <nav class="seccion otros sup-claro" aria-labelledby="otros-titulo">
+    <div class="contenedor">
+      <h2 id="otros-titulo" class="titulo titulo--3">Otras especialidades</h2>
+      <ul class="otros__lista">
+        {
+          otros.map((o) => (
+            <li>
+              <a class="otros__enlace" href={`/repuestos/${o.id}/`}>
+                <Icono nombre={o.icono} />
+                <span>
+                  <strong>{o.nombre}</strong>
+                  <span>{repuestosDe(o.id).length} repuestos</span>
+                </span>
+                <Icono nombre="flecha" />
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a class="otros__enlace" href="/repuestos/">
+            <Icono nombre="referencia" />
+            <span>
+              <strong>Todo el catálogo</strong>
+              <span>Buscar en los tres sistemas</span>
+            </span>
+            <Icono nombre="flecha" />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</Base>
+
+<style>
+  .otros {
+    padding-block: clamp(48px, 6vw, 80px);
+  }
+  .otros__lista {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+  }
+  .otros__enlace {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--s-4);
+    min-height: 76px;
+    padding: var(--s-4) var(--s-5);
+    background: var(--blanco);
+    border: 1px solid #dde1e6;
+    text-decoration: none;
+    color: var(--tinta);
+    transition:
+      border-color var(--t-rapida) ease,
+      color var(--t-rapida) ease;
+  }
+  .otros__enlace > .icono:first-child {
+    width: 28px;
+    height: 28px;
+    color: var(--azul);
+  }
+  .otros__enlace > .icono:last-child {
+    width: 20px;
+    height: 20px;
+    color: var(--azul);
+    transition: transform var(--t-media) var(--ease-out);
+  }
+  .otros__enlace strong {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 106%;
+    text-transform: uppercase;
+  }
+  .otros__enlace span span {
+    font-size: var(--t-sm);
+    color: var(--tinta-2);
+  }
+  .otros__enlace:hover {
+    border-color: var(--tinta);
+  }
+  .otros__enlace:hover > .icono:last-child {
+    transform: translateX(4px);
+  }
+  @media (min-width: 900px) {
+    .otros__lista {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -3,6 +3,7 @@
 // pantalla, botón flotante, mapa diferido, año del pie, analítica y formulario.
 import { iniciarAnalitica, registrar } from './analitica';
 import { iniciarSolicitud } from './solicitud';
+import { iniciarCatalogo } from './catalogo';
 
 const html = document.documentElement;
 
@@ -32,14 +33,12 @@ function iniciarSeccionActiva() {
   const enlaces = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')];
   if (!enlaces.length || !('IntersectionObserver' in window)) return;
   const porId = new Map(enlaces.map((a) => [a.dataset.nav!, a]));
-  // Asesoría pertenece al bloque de «Repuestos» en la navegación.
-  const alias: Record<string, string> = { asesoria: 'repuestos' };
   const secciones = [...document.querySelectorAll<HTMLElement>('main > section[id]')];
   const io = new IntersectionObserver(
     (entradas) => {
       for (const e of entradas) {
         if (!e.isIntersecting) continue;
-        const id = alias[e.target.id] ?? e.target.id;
+        const id = e.target.id;
         enlaces.forEach((a) => a.classList.toggle('is-activo', a === porId.get(id)));
       }
     },
@@ -107,7 +106,7 @@ function iniciarApariciones() {
 /* ---------- Botón flotante: fuera del hero y lejos de los botones propios ---------- */
 function iniciarFlotante() {
   const boton = document.querySelector<HTMLElement>('[data-flotante]');
-  const hero = document.querySelector('#inicio');
+  const hero = document.querySelector('[data-hero]');
   if (!boton || !hero || !('IntersectionObserver' in window)) {
     boton?.setAttribute('data-visible', 'true');
     return;
@@ -163,6 +162,7 @@ for (const iniciar of [
   iniciarMapa,
   iniciarAnio,
   iniciarSolicitud,
+  iniciarCatalogo,
 ]) {
   try {
     iniciar();

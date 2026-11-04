@@ -1,9 +1,12 @@
 # Serna Repuestos — sitio web
 
-Sitio de una página para **Serna Repuestos** (El Carmen de Viboral, Antioquia): repuestos de suspensión, frenos y motor, con WhatsApp como canal de venta.
+Sitio de **Serna Repuestos** (El Carmen de Viboral, Antioquia): repuestos de suspensión, frenos y motor, con WhatsApp como canal de venta.
 
-- **Astro 7** estático, sin librerías de interfaz. Un único módulo de JavaScript (~5 KB) para cabecera, menú, apariciones, formulario y analítica.
+Páginas: portada (`/`), catálogo con buscador (`/repuestos/`) y una página por sistema (`/repuestos/suspension/`, `/repuestos/frenos/`, `/repuestos/motor/`). Cada ficha explica la pieza y su botón «Cotizar este repuesto» llena el formulario de la misma página; WhatsApp se abre al enviar, con el repuesto y los datos del vehículo en el mensaje.
+
+- **Astro 7** estático, sin librerías de interfaz. Un único módulo de JavaScript (~7 KB) para cabecera, menú, apariciones, formulario y analítica.
 - Contenido y datos de la empresa: `src/lib/contacto.ts` (única fuente) y `src/lib/whatsapp.ts` (mensajes).
+- Catálogo: `src/data/repuestos.ts` (sistemas y fichas) y `src/data/dibujos.ts` (dibujos técnicos SVG). El buscador vive en `src/scripts/catalogo.ts`.
 - Lo que falta confirmar: [`docs/PENDIENTES.md`](docs/PENDIENTES.md). Origen de cada foto: [`docs/CREDITOS-FOTOS.md`](docs/CREDITOS-FOTOS.md). Sistema de diseño: [`docs/DISENO.md`](docs/DISENO.md).
 
 ## Uso

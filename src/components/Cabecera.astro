@@ -9,6 +9,10 @@ import Icono from './Icono.astro';
 import { NAV } from '@/lib/nav';
 import { WA } from '@/lib/whatsapp';
 import { DIRECCION, INSTAGRAM, WHATSAPP_VISIBLE } from '@/lib/contacto';
+
+// En el catálogo, «Repuestos» queda marcado como página actual.
+const enCatalogo = Astro.url.pathname.startsWith('/repuestos');
+const actual = (href: string) => (href === '/repuestos/' && enCatalogo ? 'page' : undefined);
 ---
 
 <header class="cab" data-solida="false">
@@ -22,7 +26,7 @@ import { DIRECCION, INSTAGRAM, WHATSAPP_VISIBLE } from '@/lib/contacto';
         {
           NAV.map((n) => (
             <li>
-              <a href={`/#${n.id}`} data-nav={n.id}>
+              <a href={n.href} data-nav={n.seccion} aria-current={actual(n.href)} class:list={{ 'is-activo': !!actual(n.href) }}>
                 {n.texto}
               </a>
             </li>
@@ -60,7 +64,7 @@ import { DIRECCION, INSTAGRAM, WHATSAPP_VISIBLE } from '@/lib/contacto';
       {
         NAV.map((n, i) => (
           <li>
-            <a href={`/#${n.id}`} data-menu-enlace>
+            <a href={n.href} data-menu-enlace aria-current={actual(n.href)}>
               <span class="menu__num num" aria-hidden="true">
                 {String(i + 1).padStart(2, '0')}
               </span>

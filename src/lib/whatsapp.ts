@@ -18,21 +18,19 @@ export const WA = Object.fromEntries(Object.entries(MENSAJES).map(([k, m]) => [k
 
 export interface Solicitud {
   tipo: string;
+  /** Pieza elegida en el catálogo o escrita por la persona (opcional). */
+  repuesto?: string;
   marca: string;
   modelo: string;
   anio: string;
   detalle?: string;
 }
 
-/** Mensaje del formulario de solicitud (formato del brief). La línea de detalle es opcional. */
-export function mensajeSolicitud({ tipo, marca, modelo, anio, detalle }: Solicitud) {
-  const lineas = [
-    `Hola, ${MARCA.nombre}. Quiero consultar disponibilidad de un repuesto.`,
-    `Tipo: ${tipo}.`,
-    `Marca del vehículo: ${marca}.`,
-    `Modelo: ${modelo}.`,
-    `Año: ${anio}.`,
-  ];
+/** Mensaje del formulario de solicitud (formato del brief). Repuesto y detalle son opcionales. */
+export function mensajeSolicitud({ tipo, repuesto, marca, modelo, anio, detalle }: Solicitud) {
+  const lineas = [`Hola, ${MARCA.nombre}. Quiero consultar disponibilidad de un repuesto.`, `Tipo: ${tipo}.`];
+  if (repuesto) lineas.push(`Repuesto: ${repuesto}.`);
+  lineas.push(`Marca del vehículo: ${marca}.`, `Modelo: ${modelo}.`, `Año: ${anio}.`);
   // Punto final solo si la persona no cerró ya la frase (. ? ! …).
   if (detalle) lineas.push(`Detalle: ${detalle}${/[.?!…]$/.test(detalle) ? '' : '.'}`);
   lineas.push('¿Me pueden ayudar con la referencia y el precio?');

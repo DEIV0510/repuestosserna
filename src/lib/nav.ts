@@ -1,8 +1,9 @@
-// Navegación interna (anclas de la portada). «Repuestos» lleva a la solicitud de repuesto.
+// Navegación del sitio. «Repuestos» lleva al catálogo; el resto, a secciones de la portada.
+// `seccion` = id de la sección de la portada que marca el enlace como activo al desplazarse.
 export const NAV = [
-  { id: 'inicio', texto: 'Inicio' },
-  { id: 'repuestos', texto: 'Repuestos' },
-  { id: 'especialidades', texto: 'Especialidades' },
-  { id: 'nosotros', texto: 'Nosotros' },
-  { id: 'contacto', texto: 'Contacto' },
+  { href: '/#inicio', texto: 'Inicio', seccion: 'inicio' },
+  { href: '/repuestos/', texto: 'Repuestos', seccion: null },
+  { href: '/#especialidades', texto: 'Especialidades', seccion: 'especialidades' },
+  { href: '/#nosotros', texto: 'Nosotros', seccion: 'nosotros' },
+  { href: '/#contacto', texto: 'Contacto', seccion: 'contacto' },
 ] as const;

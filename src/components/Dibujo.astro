@@ -1,0 +1,74 @@
+---
+// Dibujo técnico de un repuesto (src/data/dibujos.ts). Decorativo: la ficha ya lo nombra.
+import { DIBUJOS } from '@/data/dibujos';
+
+interface Props {
+  id: string;
+  class?: string;
+}
+const { id, class: cls } = Astro.props;
+const cuerpo = DIBUJOS[id];
+if (!cuerpo) throw new Error(`No existe el dibujo «${id}» (src/data/dibujos.ts)`);
+---
+
+<svg class:list={['dibujo', cls]} viewBox="0 0 160 120" aria-hidden="true" focusable="false">
+  <g class="dibujo__trazo" set:html={cuerpo} />
+</svg>
+
+<style>
+  .dibujo {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  /* Las piezas llegan por set:html: sus clases se estilan como globales dentro del dibujo. */
+  .dibujo__trazo {
+    fill: none;
+    stroke: var(--dib-tinta, #1b2027);
+    stroke-width: 1.8;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .dibujo :global(.m) {
+    fill: #e9ecef;
+  }
+  .dibujo :global(.m2) {
+    fill: #d3d8de;
+  }
+  .dibujo :global(.claro) {
+    fill: #fff;
+  }
+  .dibujo :global(.g) {
+    fill: #aab1b9;
+  }
+  .dibujo :global(.f) {
+    fill: #5b636d;
+  }
+  .dibujo :global(.a) {
+    fill: var(--azul-vivo);
+  }
+  .dibujo :global(.s) {
+    fill: none;
+    stroke: var(--azul-vivo);
+    stroke-width: 2.6;
+  }
+  .dibujo :global(.h) {
+    fill: var(--dib-fondo, #f6f7f9);
+  }
+  .dibujo :global(.t) {
+    fill: none;
+    stroke-width: 1.1;
+  }
+  .dibujo :global(.d) {
+    stroke-dasharray: 3 4;
+    opacity: 0.6;
+  }
+  .dibujo :global(.grueso) {
+    fill: none;
+    stroke-width: 3.2;
+  }
+  .dibujo :global(.correa) {
+    fill: none;
+    stroke-width: 6;
+  }
+</style>

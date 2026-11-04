@@ -1,0 +1,39 @@
+---
+import Base from '@/layouts/Base.astro';
+import CabezaPagina from '@/components/CabezaPagina.astro';
+import Catalogo from '@/components/Catalogo.astro';
+import Solicitud from '@/components/Solicitud.astro';
+import Icono from '@/components/Icono.astro';
+import { REPUESTOS, SISTEMAS } from '@/data/repuestos';
+---
+
+<Base
+  title="Catálogo de repuestos de suspensión, frenos y motor | Serna Repuestos"
+  description="Busca repuestos de suspensión, frenos y motor y cotízalos con los datos de tu vehículo. Serna Repuestos, El Carmen de Viboral, Antioquia."
+>
+  <CabezaPagina
+    rotulo="Catálogo"
+    titulo="Repuestos para tu vehículo"
+    entrada={`${REPUESTOS.length} componentes de suspensión, frenos y motor explicados. Encuentra el tuyo, elige «Cotizar» y completa los datos de tu vehículo.`}
+    migas={[{ texto: 'Inicio', href: '/' }, { texto: 'Repuestos' }]}
+    foto="hero-freno"
+  >
+    <Fragment slot="acciones">
+      {
+        SISTEMAS.map((s) => (
+          <a class="btn btn--secundario" href={`/repuestos/${s.id}/`}>
+            <Icono nombre={s.icono} />
+            {s.nombre}
+          </a>
+        ))
+      }
+    </Fragment>
+  </CabezaPagina>
+
+  <Catalogo sistemas={['suspension', 'frenos', 'motor']} titulo="Busca tu repuesto" accion="/repuestos/" />
+
+  <Solicitud
+    titulo="Cotiza tu repuesto"
+    entrada="Elige un repuesto del catálogo o escríbelo tú, completa los datos de tu vehículo y te llevamos a WhatsApp con el mensaje listo."
+  />
+</Base>

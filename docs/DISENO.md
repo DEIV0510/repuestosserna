@@ -9,6 +9,7 @@ Concepto: **ingeniería, precisión y movimiento**. El lenguaje sale del propio 
 - **Esquinas rectas** en todo. Las únicas «esquinas» decorativas son las marcas de registro azules (formulario, placa del logo), como en un plano.
 - **Superficies alternadas**: grafito (hero, solicitud, nosotros, pie) y niebla clara (especialidades, asesoría, contacto). Cada sección declara `sup-oscuro` o `sup-claro` y los componentes leen `--texto`, `--texto-2`, `--linea`, `--foco`.
 - **Logo solo sobre oscuro**, como fue diseñado (`components/Logo.astro`).
+- **Fichas de repuesto** (catálogo): dibujo técnico de línea sobre una cuadrícula de plano, nombre en Archivo, consejo marcado con una barra azul y «Cotizar este repuesto» al pie. En celular la ficha es horizontal (dibujo a la izquierda).
 - **Sin cifras inventadas** (clientes, años, porcentajes) ni coordenadas sueltas que parezcan teléfonos.
 
 ## Tokens (`src/styles/global.css`)

@@ -3,18 +3,18 @@
 // Suspensión encabeza (bloque grande): es la línea que la propia tienda nombra primero en
 // su video de apertura (amortiguadores, terminales y brazos de dirección). Frenos y Motor
 // van apilados a la derecha, con la foto del lado opuesto para que no sean tarjetas iguales.
-// Todo el bloque es clicable (enlace extendido) y abre WhatsApp con el mensaje del sistema.
+// Todo el bloque es clicable (enlace extendido) y lleva a la página del sistema, con sus
+// repuestos y su buscador (pedido del cliente: ver los repuestos antes de ir a WhatsApp).
 import Foto from './Foto.astro';
 import Icono from './Icono.astro';
-import { WA, type Especialidad } from '@/lib/whatsapp';
+import type { Especialidad } from '@/lib/whatsapp';
 import type { MediaId } from '@/lib/media';
+import { repuestosDe } from '@/data/repuestos';
 
 interface Bloque {
   id: Especialidad;
   nombre: string;
   descripcion: string;
-  /** Ejemplos confirmados por la tienda (video de apertura). Sin datos, no se inventan. */
-  ejemplos: string | null;
   foto: MediaId;
   icono: 'suspension' | 'frenos' | 'motor';
 }
@@ -24,7 +24,6 @@ const BLOQUES: Bloque[] = [
     id: 'suspension',
     nombre: 'Suspensión',
     descripcion: 'Componentes para el sistema de suspensión de tu vehículo.',
-    ejemplos: 'Como amortiguadores traseros, terminales y brazos de dirección.',
     foto: 'suspension',
     icono: 'suspension',
   },
@@ -32,7 +31,6 @@ const BLOQUES: Bloque[] = [
     id: 'frenos',
     nombre: 'Frenos',
     descripcion: 'Repuestos para el sistema de frenado.',
-    ejemplos: 'Como pastillas de freno.',
     foto: 'frenos',
     icono: 'frenos',
   },
@@ -40,7 +38,6 @@ const BLOQUES: Bloque[] = [
     id: 'motor',
     nombre: 'Motor',
     descripcion: 'Componentes y repuestos para el motor.',
-    ejemplos: null,
     foto: 'motor',
     icono: 'motor',
   },
@@ -52,7 +49,9 @@ const BLOQUES: Bloque[] = [
     <header class="esp__cabeza">
       <p class="rotulo revela"><span class="trazo"></span>Especialidades</p>
       <h2 id="esp-titulo" class="titulo titulo--2 esp__titulo revela">Soluciones para cada componente</h2>
-      <p class="entrada esp__entrada revela" style="--orden:1">Encuentra repuestos para las áreas esenciales de tu vehículo.</p>
+      <p class="entrada esp__entrada revela" style="--orden:1">
+        Encuentra repuestos para las áreas esenciales de tu vehículo. Entra a cada sistema para ver sus piezas y cotizarlas.
+      </p>
     </header>
 
     <div class="esp__grid">
@@ -74,10 +73,16 @@ const BLOQUES: Bloque[] = [
                 {b.nombre}
               </h3>
               <p class="esp-bloque__desc">{b.descripcion}</p>
-              {b.ejemplos && <p class="esp-bloque__ejemplos">{b.ejemplos}</p>}
-              <a class="enlace-accion esp-bloque__cta" href={WA[b.id]} target="_blank" rel="noopener" data-cta="especialidad" data-especialidad={b.id}>
-                Consultar repuestos
-                <span class="sr-only">de {b.nombre.toLowerCase()} por WhatsApp</span>
+              <ul class="esp-bloque__piezas" aria-label={`Algunos repuestos de ${b.nombre.toLowerCase()}`}>
+                {repuestosDe(b.id)
+                  .slice(0, i === 0 ? 6 : 4)
+                  .map((r) => (
+                    <li>{r.nombre}</li>
+                  ))}
+              </ul>
+              <a class="enlace-accion esp-bloque__cta" href={`/repuestos/${b.id}/`} data-especialidad={b.id}>
+                Ver los {repuestosDe(b.id).length} repuestos
+                <span class="sr-only">de {b.nombre.toLowerCase()}</span>
                 <Icono nombre="flecha" />
               </a>
             </div>
@@ -172,10 +177,26 @@ const BLOQUES: Bloque[] = [
     color: var(--plata);
     max-width: 40ch;
   }
-  .esp-bloque__ejemplos {
+  .esp-bloque__piezas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    max-width: 46ch;
     font-size: var(--t-sm);
     color: var(--titanio);
-    max-width: 44ch;
+  }
+  .esp-bloque__piezas li {
+    position: relative;
+    padding-left: 12px;
+  }
+  .esp-bloque__piezas li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 6px;
+    height: 2px;
+    background: var(--azul-vivo);
   }
   .esp-bloque__cta {
     margin-top: auto;

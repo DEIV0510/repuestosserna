@@ -1,6 +1,7 @@
 ---
 // Solicitud de repuesto: arma un mensaje de WhatsApp con los datos del vehículo.
-// No simula un buscador: no hay inventario en línea y así se dice.
+// No simula un inventario en línea y así se dice. Se usa en la portada y en las páginas del
+// catálogo: allí las fichas («Cotizar este repuesto») lo llenan con el sistema y la pieza.
 // · Validación propia (texto + ícono, nunca solo color), errores con aria-describedby.
 // · Los datos se guardan en la sesión del navegador: si vuelves de WhatsApp, siguen ahí.
 // · Sin JavaScript el botón no puede componer el mensaje; queda un enlace directo.
@@ -8,6 +9,19 @@
 import Icono from './Icono.astro';
 import { WA } from '@/lib/whatsapp';
 import { MARCA, WHATSAPP_E164 } from '@/lib/contacto';
+import { REPUESTOS } from '@/data/repuestos';
+
+interface Props {
+  titulo?: string;
+  entrada?: string;
+  /** Tipo marcado de entrada (página de un sistema). */
+  tipoInicial?: 'Suspensión' | 'Frenos' | 'Motor';
+}
+const {
+  titulo = 'Cotiza tu repuesto por WhatsApp',
+  entrada = 'Completa los datos de tu vehículo y te llevamos a WhatsApp con el mensaje listo para enviar.',
+  tipoInicial,
+} = Astro.props;
 
 const TIPOS = [
   { valor: 'Suspensión', icono: 'suspension' },
@@ -17,14 +31,12 @@ const TIPOS = [
 const anioMax = new Date().getFullYear() + 1;
 ---
 
-<section id="repuestos" class="seccion sol sup-oscuro" aria-labelledby="sol-titulo">
+<section id="cotizar" class="seccion sol sup-oscuro" aria-labelledby="sol-titulo">
   <div class="contenedor sol__grid">
     <div class="sol__intro">
       <p class="rotulo revela"><span class="trazo"></span>Solicitud de repuesto</p>
-      <h2 id="sol-titulo" class="titulo titulo--2 revela">Cotiza tu repuesto por WhatsApp</h2>
-      <p class="entrada revela" style="--orden:1">
-        Completa los datos de tu vehículo y te llevamos a WhatsApp con el mensaje listo para enviar.
-      </p>
+      <h2 id="sol-titulo" class="titulo titulo--2 revela">{titulo}</h2>
+      <p class="entrada revela" style="--orden:1">{entrada}</p>
       <p class="sol__nota revela" id="sol-nota" style="--orden:2">
         <Icono nombre="alerta" />
         <span>
@@ -39,7 +51,7 @@ const anioMax = new Date().getFullYear() + 1;
           <span class="ticket__para">Para: {MARCA.nombre}</span>
         </figcaption>
         <pre class="ticket__cuerpo" data-ticket>{`Hola, ${MARCA.nombre}. Quiero consultar disponibilidad de un repuesto.
-Tipo: ____.
+Tipo: ${tipoInicial ?? "____"}.
 Marca del vehículo: ____.
 Modelo: ____.
 Año: ____.
@@ -47,8 +59,9 @@ Año: ____.
       </figure>
     </div>
 
-    <form class="form revela" id="solicitud" novalidate aria-describedby="sol-nota" data-numero={WHATSAPP_E164} data-anio-max={anioMax}>
+    <form class="form revela" id="solicitud" novalidate aria-describedby="sol-nota" data-numero={WHATSAPP_E164} data-anio-max={anioMax} data-tipo-inicial={tipoInicial}>
       <p class="form__resumen" role="alert" data-resumen hidden></p>
+      <p class="form__aviso" role="status" data-aviso hidden></p>
 
       <fieldset class="campo campo--tipo" aria-describedby="e-tipo">
         <legend class="campo__etiqueta"><span class="num">01</span> Tipo de repuesto</legend>
@@ -56,7 +69,7 @@ Año: ____.
           {
             TIPOS.map((t) => (
               <label class="opcion">
-                <input type="radio" name="tipo" value={t.valor} required />
+                <input type="radio" name="tipo" value={t.valor} required checked={t.valor === tipoInicial} />
                 <span class="opcion__caja">
                   <Icono nombre={t.icono} />
                   {t.valor}
@@ -68,30 +81,38 @@ Año: ____.
         <p class="campo__error" id="e-tipo" data-error="tipo" hidden></p>
       </fieldset>
 
+      <div class="campo">
+        <label class="campo__etiqueta" for="f-repuesto">
+          <span class="num">02</span> Repuesto que buscas <span class="campo__opcional">(opcional)</span>
+        </label>
+        <input class="campo__control" id="f-repuesto" name="repuesto" type="text" maxlength="60" autocomplete="off" list="lista-repuestos" placeholder="Ej.: amortiguadores" />
+        <datalist id="lista-repuestos">{REPUESTOS.map((r) => <option value={r.nombre} />)}</datalist>
+      </div>
+
       <div class="form__fila">
         <div class="campo">
-          <label class="campo__etiqueta" for="f-marca"><span class="num">02</span> Marca del vehículo</label>
+          <label class="campo__etiqueta" for="f-marca"><span class="num">03</span> Marca del vehículo</label>
           <input class="campo__control" id="f-marca" name="marca" type="text" required maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" aria-describedby="e-marca" />
           <p class="campo__error" id="e-marca" data-error="marca" hidden></p>
         </div>
         <div class="campo">
-          <label class="campo__etiqueta" for="f-modelo"><span class="num">03</span> Modelo</label>
+          <label class="campo__etiqueta" for="f-modelo"><span class="num">04</span> Modelo</label>
           <input class="campo__control" id="f-modelo" name="modelo" type="text" required maxlength="40" autocomplete="off" autocapitalize="words" spellcheck="false" aria-describedby="e-modelo" />
           <p class="campo__error" id="e-modelo" data-error="modelo" hidden></p>
         </div>
       </div>
 
       <div class="campo campo--anio">
-        <label class="campo__etiqueta" for="f-anio"><span class="num">04</span> Año</label>
+        <label class="campo__etiqueta" for="f-anio"><span class="num">05</span> Año</label>
         <input class="campo__control num" id="f-anio" name="anio" type="text" inputmode="numeric" required maxlength="4" pattern="[0-9]{4}" autocomplete="off" placeholder="Ej.: 2015" aria-describedby="e-anio" />
         <p class="campo__error" id="e-anio" data-error="anio" hidden></p>
       </div>
 
       <div class="campo">
         <label class="campo__etiqueta" for="f-detalle">
-          <span class="num">05</span> Detalle <span class="campo__opcional">(opcional)</span>
+          <span class="num">06</span> Detalle <span class="campo__opcional">(opcional)</span>
         </label>
-        <textarea class="campo__control campo__control--area" id="f-detalle" name="detalle" rows="3" maxlength="280" placeholder="Ej.: amortiguador trasero, lado derecho" aria-describedby="c-detalle"></textarea>
+        <textarea class="campo__control campo__control--area" id="f-detalle" name="detalle" rows="3" maxlength="280" placeholder="Ej.: trasero, lado derecho, versión del motor" aria-describedby="c-detalle"></textarea>
         <p class="campo__ayuda num" id="c-detalle" data-contador aria-live="off">0 / 280</p>
       </div>
 
@@ -216,6 +237,14 @@ Año: ____.
     padding: var(--s-3) var(--s-4);
     border-left: 3px solid var(--error);
     background: rgb(255 138 122 / 0.08);
+    color: var(--blanco);
+    font-size: var(--t-sm);
+    font-weight: 500;
+  }
+  .form__aviso {
+    padding: var(--s-3) var(--s-4);
+    border-left: 3px solid var(--azul-vivo);
+    background: rgb(31 85 255 / 0.12);
     color: var(--blanco);
     font-size: var(--t-sm);
     font-weight: 500;

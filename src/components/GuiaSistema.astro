@@ -1,0 +1,104 @@
+---
+// Información de apoyo de cada sistema: señales para revisarlo y datos para cotizar.
+// Conocimiento general de mecánica, sin diagnósticos ni promesas de la tienda.
+import Icono from './Icono.astro';
+import type { Sistema } from '@/data/repuestos';
+
+interface Props {
+  sistema: Sistema;
+}
+const { sistema: s } = Astro.props;
+---
+
+<section class="seccion guia sup-oscuro" aria-labelledby="guia-titulo">
+  <div class="contenedor guia__grid">
+    <div class="guia__intro">
+      <p class="rotulo revela"><span class="trazo"></span>Antes de cotizar</p>
+      <h2 id="guia-titulo" class="titulo titulo--2 revela">Cómo saber qué necesita tu {s.nombre.toLowerCase()}</h2>
+      <p class="entrada revela" style="--orden:1">{s.funcion}</p>
+    </div>
+
+    <div class="guia__bloque revela" style="--orden:1">
+      <h3 class="guia__titulo"><Icono nombre="alerta" />Señales para revisarlo</h3>
+      <ul class="guia__lista">
+        {s.senales.map((t) => <li>{t}</li>)}
+      </ul>
+      <p class="guia__aviso">Si notas alguna, haz revisar el vehículo por un mecánico de confianza antes de cambiar piezas.</p>
+    </div>
+
+    <div class="guia__bloque revela" style="--orden:2">
+      <h3 class="guia__titulo"><Icono nombre="referencia" />Datos para cotizar más rápido</h3>
+      <ul class="guia__lista guia__lista--check">
+        {s.datos.map((t) => <li>{t}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .guia {
+    background: var(--grafito);
+  }
+  .guia__grid {
+    display: grid;
+    gap: var(--s-6);
+  }
+  .guia__intro {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+  }
+  .guia__intro .titulo {
+    max-width: 16ch;
+  }
+  .guia__bloque {
+    padding: var(--s-5);
+    border: 1px solid var(--acero);
+    background: var(--grafito-2);
+  }
+  .guia__titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: var(--s-4);
+    font-size: var(--t-base);
+    font-weight: 600;
+  }
+  .guia__titulo .icono {
+    width: 22px;
+    height: 22px;
+    color: var(--azul-luz);
+  }
+  .guia__lista {
+    display: grid;
+    border-top: 1px solid var(--acero);
+  }
+  .guia__lista li {
+    position: relative;
+    padding: 12px 0 12px 22px;
+    border-bottom: 1px solid var(--acero);
+    font-size: var(--t-sm);
+    color: var(--plata);
+  }
+  .guia__lista li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 21px;
+    width: 10px;
+    height: 2px;
+    background: var(--azul-vivo);
+  }
+  .guia__aviso {
+    margin-top: var(--s-4);
+    font-size: var(--t-xs);
+    color: var(--titanio);
+  }
+  @media (min-width: 1024px) {
+    .guia__grid {
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: clamp(24px, 3vw, 48px);
+      align-items: start;
+    }
+  }
+</style>

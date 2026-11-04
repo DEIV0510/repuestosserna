@@ -27,7 +27,7 @@ const ESPECIALIDADES = [
           {
             ESPECIALIDADES.map((e) => (
               <li>
-                <a href={`/#${e.id}`}>{e.texto}</a>
+                <a href={`/repuestos/${e.id}/`}>{e.texto}</a>
               </li>
             ))
           }
@@ -40,7 +40,7 @@ const ESPECIALIDADES = [
           {
             NAV.map((n) => (
               <li>
-                <a href={`/#${n.id}`}>{n.texto}</a>
+                <a href={n.href}>{n.texto}</a>
               </li>
             ))
           }

@@ -1,0 +1,345 @@
+---
+// Catálogo de repuestos con buscador (y filtros por sistema en el catálogo general).
+// Funciona sin JavaScript (todas las fichas visibles); con JS filtra al escribir, lee ?q= y
+// ?sistema= de la URL y, si no hay resultados, ofrece cotizar lo buscado igual.
+import FichaRepuesto from './FichaRepuesto.astro';
+import Icono from './Icono.astro';
+import { SISTEMAS, repuestosDe, type SistemaId } from '@/data/repuestos';
+
+interface Props {
+  /** Sistemas que muestra; con más de uno se agrupan y aparecen los filtros. */
+  sistemas: SistemaId[];
+  titulo: string;
+  /** Página a la que lleva la búsqueda sin JavaScript. */
+  accion: string;
+}
+
+const { sistemas, titulo, accion } = Astro.props;
+const general = sistemas.length > 1;
+const grupos = SISTEMAS.filter((s) => sistemas.includes(s.id)).map((s) => ({
+  ...s,
+  // Primero lo que la tienda nombra en su video; el resto en el orden de la guía.
+  repuestos: [...repuestosDe(s.id)].sort((a, b) => Number(!!b.mencionado) - Number(!!a.mencionado)),
+}));
+const total = grupos.reduce((n, g) => n + g.repuestos.length, 0);
+const sistemaUnico = general ? null : grupos[0];
+---
+
+<section id="catalogo" class="seccion cat sup-claro" aria-labelledby="cat-titulo" data-catalogo data-total={total} data-sistema-fijo={sistemaUnico?.id}>
+  <div class="contenedor">
+    <div class="cat__cabeza">
+      <h2 id="cat-titulo" class="titulo titulo--3 cat__titulo">{titulo}</h2>
+      <form class="cat__buscar" role="search" action={accion} method="get" data-buscador>
+        <label class="sr-only" for="cat-q">Buscar un repuesto</label>
+        <Icono nombre="referencia" />
+        <input
+          id="cat-q"
+          name="q"
+          type="search"
+          placeholder={sistemaUnico ? `Buscar en ${sistemaUnico.nombre.toLowerCase()}…` : 'Busca: amortiguador, pastillas, correa…'}
+          autocomplete="off"
+          enterkeyhint="search"
+          spellcheck="false"
+        />
+        <button class="cat__buscar-ir" type="submit">Buscar</button>
+      </form>
+    </div>
+
+    {
+      general && (
+        <div class="cat__filtros" role="group" aria-label="Filtrar por sistema">
+          <button type="button" class="cat__filtro" aria-pressed="true" data-filtro="todos">
+            Todos <span class="num">{total}</span>
+          </button>
+          {grupos.map((g) => (
+            <button type="button" class="cat__filtro" aria-pressed="false" data-filtro={g.id}>
+              <Icono nombre={g.icono} />
+              {g.nombre} <span class="num">{g.repuestos.length}</span>
+            </button>
+          ))}
+        </div>
+      )
+    }
+
+    <p class="cat__conteo" aria-live="polite" data-conteo>
+      {total} repuestos
+    </p>
+
+    {
+      grupos.map((g) => (
+        <div class="cat__grupo" data-grupo={g.id}>
+          {general && (
+            <div class="cat__grupo-cabeza">
+              <h3 class="cat__grupo-titulo">
+                <Icono nombre={g.icono} />
+                {g.nombre}
+              </h3>
+              <a class="cat__grupo-ver" href={`/repuestos/${g.id}/`}>
+                Ver la guía de {g.nombre.toLowerCase()}
+                <Icono nombre="flecha" />
+              </a>
+            </div>
+          )}
+          <div class="cat__grid">
+            {g.repuestos.map((r) => (
+              <FichaRepuesto repuesto={r} nivel={general ? 4 : 3} />
+            ))}
+          </div>
+        </div>
+      ))
+    }
+
+    <div class="cat__vacio" data-vacio hidden>
+      <p class="cat__vacio-titulo">No encontramos «<span data-vacio-termino></span>» en la guía.</p>
+      <p>Puede que igual lo tengamos: cotízalo con los datos de tu vehículo y te respondemos por WhatsApp.</p>
+      <div class="cat__vacio-acciones">
+        <a class="btn btn--primario" href="#cotizar" data-cotizar data-vacio-cotizar data-tipo={sistemaUnico?.tipo}>
+          Cotizar este repuesto
+          <Icono nombre="flecha" />
+        </a>
+        {
+          sistemaUnico && (
+            <a class="btn btn--secundario" href="/repuestos/" data-vacio-todo>
+              Buscar en todo el catálogo
+            </a>
+          )
+        }
+      </div>
+    </div>
+
+    <p class="cat__nota">
+      <Icono nombre="alerta" />
+      <span>
+        Esta guía muestra los componentes de cada sistema para ayudarte a identificar lo que necesitas. No es un inventario
+        en línea: la disponibilidad, la referencia y el precio se confirman al cotizar.
+      </span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .cat {
+    padding-top: clamp(40px, 6vw, 72px);
+  }
+  .cat__cabeza {
+    display: grid;
+    gap: var(--s-4);
+    align-items: end;
+  }
+  .cat__titulo {
+    font-size: var(--t-xl);
+  }
+
+  /* Buscador */
+  .cat__buscar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #c3cad2;
+    background: var(--blanco);
+    transition:
+      border-color var(--t-rapida) ease,
+      box-shadow var(--t-rapida) ease;
+  }
+  .cat__buscar:focus-within {
+    border-color: var(--azul);
+    box-shadow: inset 0 -2px 0 var(--azul);
+  }
+  .cat__buscar > .icono {
+    position: absolute;
+    left: 16px;
+    width: 22px;
+    height: 22px;
+    color: var(--tinta-2);
+    pointer-events: none;
+  }
+  .cat__buscar input {
+    flex: 1;
+    min-width: 0;
+    min-height: 56px;
+    padding: 0 12px 0 50px;
+    border: 0;
+    background: transparent;
+    font-size: 1rem;
+    color: var(--tinta);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .cat__buscar input:focus {
+    outline: none;
+  }
+  .cat__buscar input::placeholder {
+    color: #7a828c;
+  }
+  .cat__buscar-ir {
+    align-self: stretch;
+    padding: 0 20px;
+    border: 0;
+    background: var(--tinta);
+    color: var(--blanco);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .cat__buscar-ir:hover {
+    background: var(--azul);
+  }
+  :global(.is-app) .cat__buscar-ir {
+    display: none;
+  }
+
+  /* Filtros por sistema */
+  .cat__filtros {
+    display: flex;
+    gap: 8px;
+    margin-top: var(--s-5);
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .cat__filtros::-webkit-scrollbar {
+    display: none;
+  }
+  .cat__filtro {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid #c3cad2;
+    background: var(--blanco);
+    color: var(--tinta);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--t-rapida) ease,
+      border-color var(--t-rapida) ease,
+      color var(--t-rapida) ease;
+  }
+  .cat__filtro .icono {
+    width: 18px;
+    height: 18px;
+    color: var(--azul);
+  }
+  .cat__filtro .num {
+    font-size: var(--t-xs);
+    color: var(--tinta-2);
+  }
+  .cat__filtro:hover {
+    border-color: var(--tinta);
+  }
+  .cat__filtro[aria-pressed='true'] {
+    background: var(--tinta);
+    border-color: var(--tinta);
+    color: var(--blanco);
+  }
+  .cat__filtro[aria-pressed='true'] .icono,
+  .cat__filtro[aria-pressed='true'] .num {
+    color: var(--azul-luz);
+  }
+
+  .cat__conteo {
+    margin: var(--s-5) 0 var(--s-4);
+    font-size: var(--t-sm);
+    color: var(--tinta-2);
+  }
+
+  /* Grupos y rejilla */
+  .cat__grupo + .cat__grupo {
+    margin-top: var(--s-7);
+  }
+  .cat__grupo-cabeza {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 16px;
+    margin-bottom: var(--s-4);
+    padding-bottom: var(--s-3);
+    border-bottom: 2px solid var(--tinta);
+  }
+  .cat__grupo-titulo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 106%;
+    font-size: var(--t-lg);
+    text-transform: uppercase;
+  }
+  .cat__grupo-titulo .icono {
+    width: 26px;
+    height: 26px;
+    color: var(--azul);
+  }
+  .cat__grupo-ver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--azul);
+    text-decoration: none;
+  }
+  .cat__grupo-ver .icono {
+    width: 16px;
+    height: 16px;
+  }
+  .cat__grupo-ver:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .cat__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+    gap: var(--s-4);
+  }
+
+  /* Sin resultados */
+  .cat__vacio {
+    display: grid;
+    gap: var(--s-3);
+    justify-items: start;
+    padding: var(--s-6);
+    border: 1px dashed #b3bcc6;
+    background: var(--blanco);
+    color: var(--tinta-2);
+  }
+  .cat__vacio-titulo {
+    font-weight: 600;
+    font-size: var(--t-md);
+    color: var(--tinta);
+  }
+  .cat__vacio-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-2);
+  }
+
+  .cat__nota {
+    display: flex;
+    gap: var(--s-3);
+    margin-top: var(--s-7);
+    max-width: 70ch;
+    font-size: var(--t-sm);
+    color: var(--tinta-2);
+  }
+  .cat__nota .icono {
+    width: 20px;
+    height: 20px;
+    color: var(--azul);
+  }
+
+  @media (min-width: 900px) {
+    .cat__cabeza {
+      grid-template-columns: 1fr minmax(360px, 520px);
+    }
+  }
+</style>

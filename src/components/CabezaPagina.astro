@@ -1,0 +1,154 @@
+---
+// Cabecera de las páginas del catálogo: ruta (migas), título, entrada y acciones; a la
+// derecha, la foto del sistema con el mismo corte a 12° del hero de la portada.
+import Foto from './Foto.astro';
+import type { MediaId } from '@/lib/media';
+
+interface Props {
+  rotulo: string;
+  titulo: string;
+  entrada: string;
+  migas: { texto: string; href?: string }[];
+  foto?: MediaId;
+}
+
+const { rotulo, titulo, entrada, migas, foto } = Astro.props;
+---
+
+<section class="cp sup-oscuro" aria-labelledby="cp-titulo" data-hero>
+  <div class="contenedor cp__grid">
+    <div class="cp__texto">
+      <nav class="cp__migas" aria-label="Ruta">
+        <ol>
+          {
+            migas.map((m, i) => (
+              <li>
+                {m.href ? (
+                  <a href={m.href}>{m.texto}</a>
+                ) : (
+                  <span aria-current="page">{m.texto}</span>
+                )}
+                {i < migas.length - 1 && <span class="cp__sep" aria-hidden="true">/</span>}
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+      <p class="rotulo cp__rotulo"><span class="trazo"></span>{rotulo}</p>
+      <h1 id="cp-titulo" class="titulo cp__titulo">{titulo}</h1>
+      <p class="cp__entrada">{entrada}</p>
+      <div class="cp__acciones"><slot name="acciones" /></div>
+    </div>
+    {
+      foto && (
+        <div class="cp__foto">
+          <Foto id={foto} priority sizes="(min-width: 900px) 46vw, 100vw" />
+          <span class="cp__filo" aria-hidden="true" />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .cp {
+    position: relative;
+    padding-top: calc(var(--header-h) + clamp(24px, 5vw, 56px));
+    padding-bottom: clamp(40px, 6vw, 72px);
+    border-bottom: 1px solid var(--acero);
+    overflow: hidden;
+  }
+  .cp__grid {
+    display: grid;
+    gap: var(--s-6);
+    align-items: center;
+  }
+  .cp__migas ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: var(--t-sm);
+    color: var(--titanio);
+  }
+  .cp__migas li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cp__migas a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    color: var(--plata);
+    text-decoration: none;
+  }
+  .cp__migas a:hover {
+    color: var(--blanco);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .cp__migas [aria-current] {
+    color: var(--blanco);
+  }
+  .cp__sep {
+    color: var(--acero);
+  }
+  .cp__rotulo {
+    margin-top: var(--s-5);
+    color: var(--plata);
+  }
+  .cp__titulo {
+    margin-top: var(--s-4);
+    font-size: var(--t-2xl);
+    max-width: 16ch;
+  }
+  .cp__entrada {
+    margin-top: var(--s-4);
+    max-width: 52ch;
+    font-size: var(--t-md);
+    color: var(--plata);
+  }
+  .cp__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+  }
+  .cp__acciones:empty {
+    display: none;
+  }
+  .cp__foto {
+    position: relative;
+    aspect-ratio: 16 / 10;
+  }
+  .cp__foto :global(.foto) {
+    width: 100%;
+    height: 100%;
+  }
+  .cp__filo {
+    position: absolute;
+    left: 0;
+    top: -1px;
+    width: 72px;
+    height: 3px;
+    background: var(--azul-vivo);
+  }
+  @media (min-width: 900px) {
+    .cp__grid {
+      grid-template-columns: 1.1fr 1fr;
+      gap: clamp(32px, 5vw, 80px);
+    }
+    /* Corte a 12° como el hero de la portada: tan 12° × alto = 0,2126 × 0,625 × ancho ≈ 13,3 % */
+    .cp__foto :global(.foto) {
+      clip-path: polygon(13.3% 0, 100% 0, 100% 100%, 0 100%);
+    }
+    .cp__filo {
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      height: auto;
+      transform: skewX(calc(var(--angulo) * -1));
+      transform-origin: 0 100%;
+    }
+  }
+</style>

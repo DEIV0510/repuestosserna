@@ -10,6 +10,7 @@ import { pictureData } from '@/lib/media';
 import { WA } from '@/lib/whatsapp';
 import { DIRECCION } from '@/lib/contacto';
 import { HERO_SIZES } from '@/lib/hero';
+import { REPUESTOS } from '@/data/repuestos';
 
 const full = pictureData('hero-freno', 'full');
 const card = pictureData('hero-freno', 'card');
@@ -32,7 +33,7 @@ const SISTEMAS = [
 ] as const;
 ---
 
-<section id="inicio" class="hero sup-oscuro" aria-labelledby="hero-titulo">
+<section id="inicio" class="hero sup-oscuro" aria-labelledby="hero-titulo" data-hero>
   <div class="hero__media">
     <div class="hero__encuadre">
       <div class="hero__lienzo" style={`--ratio:${(W / H).toFixed(4)}`}>
@@ -87,18 +88,30 @@ const SISTEMAS = [
       </div>
     </div>
 
-    <ul class="hero__sistemas" aria-label="Especialidades">
-      {
-        SISTEMAS.map((s) => (
-          <li>
-            <a href={`#${s.id}`}>
-              <Icono nombre={s.icono} />
-              {s.texto}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="hero__pie">
+      {/* Buscador: lleva al catálogo con ?q= (funciona sin JavaScript) */}
+      <form class="hero__busca" action="/repuestos/" method="get" role="search">
+        <label class="hero__busca-etiqueta" for="hero-q">¿Qué repuesto buscas?</label>
+        <div class="hero__busca-campo">
+          <Icono nombre="referencia" />
+          <input id="hero-q" name="q" type="search" list="hero-sugerencias" placeholder="Ej.: amortiguador, pastillas, correa" autocomplete="off" enterkeyhint="search" spellcheck="false" />
+          <button type="submit">Buscar</button>
+        </div>
+        <datalist id="hero-sugerencias">{REPUESTOS.map((r) => <option value={r.nombre} />)}</datalist>
+      </form>
+      <ul class="hero__sistemas" aria-label="Ver repuestos por sistema">
+        {
+          SISTEMAS.map((s) => (
+            <li>
+              <a href={`/repuestos/${s.id}/`}>
+                <Icono nombre={s.icono} />
+                {s.texto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -189,13 +202,82 @@ const SISTEMAS = [
     margin-top: var(--s-6);
   }
 
+  .hero__pie {
+    margin-top: var(--s-6);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--acero);
+  }
+  .hero__busca-etiqueta {
+    display: block;
+    margin-bottom: var(--s-2);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--blanco);
+  }
+  .hero__busca-campo {
+    position: relative;
+    display: flex;
+    border: 1px solid #3a434d;
+    background: var(--grafito-2);
+    transition:
+      border-color var(--t-rapida) ease,
+      box-shadow var(--t-rapida) ease;
+  }
+  .hero__busca-campo:focus-within {
+    border-color: var(--azul-luz);
+    box-shadow: inset 0 -2px 0 var(--azul-vivo);
+  }
+  .hero__busca-campo > .icono {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translateY(-50%);
+    color: var(--titanio);
+    pointer-events: none;
+  }
+  .hero__busca-campo input {
+    flex: 1;
+    min-width: 0;
+    min-height: 52px;
+    padding: 0 10px 0 44px;
+    border: 0;
+    background: transparent;
+    color: var(--blanco);
+    font-size: 1rem;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .hero__busca-campo input::placeholder {
+    color: #7d8792;
+  }
+  .hero__busca-campo input:focus {
+    outline: none;
+  }
+  .hero__busca-campo button {
+    padding: 0 18px;
+    border: 0;
+    background: var(--plata);
+    color: var(--tinta);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color var(--t-rapida) ease;
+  }
+  .hero__busca-campo button:hover {
+    background: var(--blanco);
+  }
+  .hero__busca-campo button:focus-visible {
+    outline-offset: -4px;
+  }
   .hero__sistemas {
     display: flex;
     flex-wrap: wrap;
     gap: 4px 20px;
-    margin-top: var(--s-6);
-    padding-top: var(--s-4);
-    border-top: 1px solid var(--acero);
+    margin-top: var(--s-2);
     font-size: var(--t-sm);
     color: var(--plata);
   }
@@ -284,10 +366,11 @@ const SISTEMAS = [
     .hero__titulo {
       max-width: none;
     }
-    .hero__sistemas {
-      width: 46%;
+    /* 42 %: el buscador termina antes del corte inclinado de la foto (desde 1024 px). */
+    .hero__pie {
+      width: 42%;
       margin-top: 0;
-      padding-block: var(--s-4) var(--s-5);
+      padding-bottom: var(--s-4);
     }
 
     /* Marcas de catálogo: número sobre la pieza, con mira fina */
