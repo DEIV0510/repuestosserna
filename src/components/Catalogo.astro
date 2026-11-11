@@ -1,10 +1,11 @@
 ---
 // Catálogo de repuestos con buscador (y filtros por sistema en el catálogo general).
 // Funciona sin JavaScript (todas las fichas visibles); con JS filtra al escribir, lee ?q= y
-// ?sistema= de la URL y, si no hay resultados, ofrece cotizar lo buscado igual.
+// ?sistema= de la URL y, si no hay resultados, ofrece la búsqueda especial con lo buscado.
 import FichaRepuesto from './FichaRepuesto.astro';
 import Icono from './Icono.astro';
 import { SISTEMAS, repuestosDe, type SistemaId } from '@/data/repuestos';
+import { WA } from '@/lib/whatsapp';
 
 interface Props {
   /** Sistemas que muestra; con más de uno se agrupan y aparecen los filtros. */
@@ -91,10 +92,11 @@ const sistemaUnico = general ? null : grupos[0];
 
     <div class="cat__vacio" data-vacio hidden>
       <p class="cat__vacio-titulo">No encontramos «<span data-vacio-termino></span>» en la guía.</p>
-      <p>Puede que igual lo tengamos: cotízalo con los datos de tu vehículo y te respondemos por WhatsApp.</p>
+      <p>Te ayudamos a conseguirlo: pídelo en la búsqueda especial y lo ubicamos con nuestros proveedores.</p>
       <div class="cat__vacio-acciones">
-        <a class="btn btn--primario" href="#cotizar" data-cotizar data-vacio-cotizar data-tipo={sistemaUnico?.tipo}>
-          Cotizar este repuesto
+        <a class="btn cat__vacio-buscar" href={WA.busqueda} target="_blank" rel="noopener" data-abrir-busqueda data-vacio-cotizar data-cta="catalogo-sin-resultados">
+          <Icono nombre="referencia" />
+          Pedir búsqueda especial
           <Icono nombre="flecha" />
         </a>
         {
@@ -315,6 +317,19 @@ const sistemaUnico = general ? null : grupos[0];
     font-weight: 600;
     font-size: var(--t-md);
     color: var(--tinta);
+  }
+  /* Mismo ámbar de la búsqueda especial: se reconoce como el mismo servicio */
+  .cat__vacio-buscar {
+    background: var(--ambar);
+    color: var(--tinta);
+  }
+  .cat__vacio-buscar:hover {
+    background: var(--ambar-claro);
+  }
+  .cat__vacio {
+    border-color: var(--ambar);
+    border-style: solid;
+    border-left-width: 4px;
   }
   .cat__vacio-acciones {
     display: flex;

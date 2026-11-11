@@ -10,8 +10,14 @@ Datos que **no se inventaron** porque no están confirmados. El sitio funciona s
 | **Coordenadas del local** | No se publicaron (no están confirmadas). El mapa y «Cómo llegar» usan la dirección escrita. | Si el cliente comparte el punto exacto de Google Maps, se puede usar su enlace en `MAPS_INDICACIONES`. |
 | **Analítica** | No hay Google Analytics, Meta Pixel ni CRM instalados. Los clics en WhatsApp, Instagram, mapa y menú ya se publican en `window.dataLayer` y como evento `serna:cta`. | Instalar la herramienta que elija el cliente: recibirá los eventos sin tocar el código (`src/scripts/analitica.ts`). |
 | **Catálogo real (productos, fotos, referencias, precios)** | Por pedido del cliente (audio del 2026-11-04: «que no lleve directo a WhatsApp, que se vean los repuestos y se pueda buscar») el sitio tiene un **catálogo de 20 componentes** (8 de suspensión, 6 de frenos, 6 de motor) con dibujo técnico, explicación y buscador. Es una **guía de componentes, no un inventario**: la página lo dice. Solo amortiguadores, terminales y brazos de dirección y pastillas están confirmados por la tienda (video de apertura). | Pedir al cliente su lista real (qué maneja, fotos, referencias y, si quiere, precios). Se carga en `src/data/repuestos.ts` y las fichas se completan solas. |
+| **Fotos de sus repuestos** (audio 2026-11-09: harán una sesión de fotos) | Las fichas ya muestran la foto real cuando existe: se deja la foto en `_material-cliente/repuestos/` con el id de la ficha (p. ej. `amortiguadores.jpg`) y se corre `npm run images`. Si traen referencia, vehículos compatibles o precio, se agregan en `src/data/repuestos.ts` (`referencia`, `compatibilidad`, `precio`) y la ficha los muestra. | Esperar las fotos del cliente. Para piezas que no están en la guía, agregarlas también a `repuestos.ts`. |
 | **Fotos de productos propios** | No se entregaron fotos de producto. Las especialidades usan fotos de Unsplash (ver `CREDITOS-FOTOS.md`) que ilustran cada sistema; las fichas usan dibujos técnicos genéricos (`src/data/dibujos.ts`). | Reemplazarlas por fotos reales cuando existan: `scripts/imagenes.config.mjs` + `npm run images`. |
 | **Marcas, precios, garantías** | No se mencionan en ningún lugar. | — |
+
+## Pedidos del 2026-11-09 (ya en el sitio)
+
+- **Foto del repuesto por WhatsApp** (sin servidor): casilla «Tengo una foto del repuesto» en los formularios; el mensaje lo dice y, al abrir WhatsApp, se recuerda adjuntarla con el clip.
+- **Búsqueda especial** en ámbar (color propio): franja en la portada y en el catálogo, pestaña fija (vertical en escritorio; barra inferior junto a WhatsApp en el celular) y un formulario corto que manda «Busco un repuesto que no está en el catálogo». La búsqueda sin resultados del catálogo lleva aquí.
 
 ## Lo que sí se usó del material del cliente
 

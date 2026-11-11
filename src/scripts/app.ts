@@ -103,24 +103,29 @@ function iniciarApariciones() {
   els.forEach((el) => io.observe(el));
 }
 
-/* ---------- Botón flotante: fuera del hero y lejos de los botones propios ---------- */
+/* ---------- Botones fijos (WhatsApp y búsqueda especial) ----------
+   Aparecen fuera del hero y se ocultan donde ya hay un botón propio (formularios, contacto,
+   pie). Cada uno puede sumar zonas con data-evitar (la pestaña ámbar se oculta sobre la
+   franja de búsqueda especial, que ya ofrece lo mismo). */
 function iniciarFlotante() {
-  const boton = document.querySelector<HTMLElement>('[data-flotante]');
+  const botones = [...document.querySelectorAll<HTMLElement>('[data-flotante]')];
   const hero = document.querySelector('[data-hero]');
-  if (!boton || !hero || !('IntersectionObserver' in window)) {
-    boton?.setAttribute('data-visible', 'true');
+  if (!botones.length || !hero || !('IntersectionObserver' in window)) {
+    botones.forEach((b) => b.setAttribute('data-visible', 'true'));
     return;
   }
+  const comunes = [hero, ...document.querySelectorAll('#solicitud, #contacto, .pie')];
+  const zonas = botones.map((b) => [...comunes, ...(b.dataset.evitar ? document.querySelectorAll(b.dataset.evitar) : [])]);
   const visibles = new Set<Element>();
-  const evitar = [hero, document.querySelector('#solicitud'), document.querySelector('#contacto'), document.querySelector('.pie')].filter(Boolean) as Element[];
+  const pintar = () => botones.forEach((b, i) => b.setAttribute('data-visible', String(!zonas[i].some((z) => visibles.has(z)))));
   const io = new IntersectionObserver(
     (entradas) => {
       for (const e of entradas) e.isIntersecting ? visibles.add(e.target) : visibles.delete(e.target);
-      boton.setAttribute('data-visible', String(visibles.size === 0));
+      pintar();
     },
     { threshold: 0 },
   );
-  evitar.forEach((el) => io.observe(el));
+  new Set(zonas.flat()).forEach((el) => io.observe(el));
 }
 
 /* ---------- Mapa diferido ---------- */

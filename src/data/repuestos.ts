@@ -41,6 +41,13 @@ export interface Repuesto {
   sinonimos: string[];
   dibujo: string;
   mencionado?: boolean;
+  // Datos de producto real: solo cuando la tienda los entregue (sin datos, no se muestran).
+  /** Referencia o número de parte. */
+  referencia?: string;
+  /** Vehículos con los que es compatible, tal como los indique la tienda. */
+  compatibilidad?: string;
+  /** Precio en pesos; null o ausente = se consulta. */
+  precio?: number | null;
 }
 
 export const SISTEMAS: Sistema[] = [

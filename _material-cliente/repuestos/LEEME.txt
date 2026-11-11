@@ -1,0 +1,6 @@
+Fotos de los repuestos de la tienda.
+
+Nombra cada foto con el id de su ficha (src/data/repuestos.ts), por ejemplo:
+  amortiguadores.jpg, pastillas-de-freno.jpg, correas.png
+y corre: npm run images
+La ficha muestra la foto en lugar del dibujo. JPG, PNG o WebP; la foto se usa entera.

@@ -1,0 +1,167 @@
+---
+// Franja ámbar «¿No encuentras tu repuesto?»: el servicio de búsqueda especial, distinto del
+// catálogo (pedido del cliente). Abre el diálogo de BusquedaEspecial; sin JS, va a WhatsApp.
+import Icono from './Icono.astro';
+import { WA } from '@/lib/whatsapp';
+
+interface Props {
+  /** Variante corta para el final del catálogo. */
+  compacta?: boolean;
+}
+const { compacta = false } = Astro.props;
+
+const PASOS = [
+  { titulo: 'Cuéntanos qué buscas', texto: 'El repuesto y los datos de tu vehículo.' },
+  { titulo: 'Envía una foto si la tienes', texto: 'La adjuntas en el chat de WhatsApp.' },
+  { titulo: 'Lo buscamos por ti', texto: 'Con nuestros proveedores, y te respondemos por WhatsApp.' },
+];
+---
+
+<section class:list={['busc', { 'busc--compacta': compacta }]} id={compacta ? undefined : 'no-lo-encuentras'} aria-labelledby="busc-titulo" data-seccion-busqueda>
+  <div class="contenedor busc__grid">
+    <div class="busc__texto">
+      <p class="busc__rotulo revela"><span class="busc__trazo" aria-hidden="true"></span>Búsqueda especial</p>
+      <h2 id="busc-titulo" class="titulo titulo--2 busc__titulo revela">¿No encuentras tu repuesto?</h2>
+      <p class="busc__entrada revela" style="--orden:1">
+        Si no está en el catálogo o es difícil de conseguir, te ayudamos a ubicarlo con nuestros proveedores. Cuéntanos cuál
+        necesitas y te respondemos por WhatsApp.
+      </p>
+      <a class="btn busc__boton revela" style="--orden:2" href={WA.busqueda} target="_blank" rel="noopener" data-abrir-busqueda data-cta="seccion-busqueda">
+        <Icono nombre="referencia" />
+        Buscar mi repuesto
+        <Icono nombre="flecha" />
+      </a>
+    </div>
+    {
+      !compacta && (
+        <ol class="busc__pasos">
+          {PASOS.map((p, i) => (
+            <li class="revela" style={`--orden:${i}`}>
+              <span class="busc__num num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span>
+                <strong>{p.titulo}</strong>
+                {p.texto}
+              </span>
+            </li>
+          ))}
+        </ol>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .busc {
+    --texto: var(--tinta);
+    --texto-2: #3d3420;
+    --foco: var(--tinta);
+    position: relative;
+    padding-block: clamp(56px, 7vw, 104px);
+    background: var(--ambar);
+    color: var(--tinta);
+    overflow: hidden;
+    color-scheme: light;
+  }
+  /* Franjas inclinadas a 12° en el borde derecho: el mismo gesto del sistema, en ámbar */
+  .busc::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -8%;
+    width: 38%;
+    background: repeating-linear-gradient(-78deg, transparent 0 22px, rgb(13 16 20 / 0.06) 22px 24px);
+    pointer-events: none;
+  }
+  .busc__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--s-7);
+    align-items: center;
+  }
+  .busc__texto {
+    display: grid;
+    gap: var(--s-4);
+    justify-items: start;
+  }
+  .busc__rotulo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .busc__trazo {
+    width: 36px;
+    height: 4px;
+    background: var(--tinta);
+    clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 60%);
+  }
+  .busc__titulo {
+    max-width: 14ch;
+  }
+  .busc__entrada {
+    max-width: 50ch;
+    font-size: var(--t-md);
+    line-height: 1.55;
+  }
+  .busc__boton {
+    margin-top: var(--s-2);
+    background: var(--tinta);
+    color: var(--blanco);
+  }
+  .busc__boton:hover {
+    background: #22282f;
+  }
+  .busc__boton .icono:last-child {
+    transition: transform var(--t-media) var(--ease-out);
+  }
+  .busc__boton:hover .icono:last-child {
+    transform: translateX(4px);
+  }
+  .busc__pasos {
+    display: grid;
+    border-top: 2px solid var(--tinta);
+  }
+  .busc__pasos li {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: var(--s-3);
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid rgb(13 16 20 / 0.25);
+    font-size: var(--t-sm);
+  }
+  .busc__pasos strong {
+    display: block;
+    font-size: var(--t-base);
+    font-weight: 600;
+  }
+  .busc__num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 106%;
+    font-size: var(--t-lg);
+    line-height: 1.1;
+  }
+  .busc--compacta {
+    padding-block: clamp(40px, 5vw, 64px);
+  }
+  .busc--compacta .busc__titulo {
+    font-size: var(--t-xl);
+    max-width: none;
+  }
+  @media (min-width: 900px) {
+    .busc__grid {
+      grid-template-columns: 1.2fr 1fr;
+      gap: clamp(40px, 6vw, 96px);
+    }
+    .busc--compacta .busc__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

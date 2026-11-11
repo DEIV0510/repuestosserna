@@ -1,0 +1,274 @@
+---
+// Búsqueda especial (pedido del cliente, audios del 2026-11-09): repuestos que no están en el
+// catálogo o son difíciles de conseguir. Color propio (ámbar) para que se vea como un servicio
+// aparte de Suspensión, Frenos y Motor.
+// · Pestaña fija en todas las páginas + diálogo con un formulario corto → WhatsApp.
+// · Sin JavaScript la pestaña es un enlace directo a WhatsApp con un mensaje de búsqueda.
+// · La foto se adjunta en el chat (la web no sube archivos).
+import Icono from './Icono.astro';
+import { WA } from '@/lib/whatsapp';
+
+const anioMax = new Date().getFullYear() + 1;
+---
+
+<a class="pestana-busqueda" href={WA.busqueda} target="_blank" rel="noopener" data-abrir-busqueda data-cta="pestana" data-flotante data-evitar="[data-seccion-busqueda]">
+  <Icono nombre="referencia" />
+  <span class="pestana-busqueda__largo">¿No encuentras tu repuesto?</span>
+  <span class="pestana-busqueda__corto" aria-hidden="true">¿No lo encuentras?</span>
+</a>
+
+<dialog id="busqueda-especial" class="busq" aria-labelledby="busq-titulo">
+  <div class="busq__panel">
+    <div class="busq__cabeza">
+      <div>
+        <p class="busq__rotulo">Búsqueda especial</p>
+        <h2 id="busq-titulo" class="busq__titulo">Te ayudamos a conseguir tu repuesto</h2>
+      </div>
+      <button class="busq__cerrar" type="button" data-cerrar-busqueda>
+        <Icono nombre="cerrar" />
+        <span class="sr-only">Cerrar</span>
+      </button>
+    </div>
+    <p class="busq__entrada">
+      ¿No está en el catálogo o es difícil de encontrar? Cuéntanos cuál necesitas: lo buscamos con nuestros proveedores y te
+      respondemos por WhatsApp.
+    </p>
+
+    <form class="form busq__form" id="busqueda" data-solicitud="buscar" novalidate data-anio-max={anioMax}>
+      <p class="form__resumen" role="alert" data-resumen hidden></p>
+
+      <div class="campo">
+        <label class="campo__etiqueta" for="b-repuesto">Repuesto que buscas</label>
+        <input class="campo__control" id="b-repuesto" name="repuesto" type="text" required maxlength="80" autocomplete="off" placeholder="Ej.: guardapolvo de palier, chapa de puerta" aria-describedby="e-b-repuesto" />
+        <p class="campo__error" id="e-b-repuesto" data-error="repuesto" hidden></p>
+      </div>
+
+      <div class="form__fila busq__fila">
+        <div class="campo">
+          <label class="campo__etiqueta" for="b-marca">Marca</label>
+          <input class="campo__control" id="b-marca" name="marca" type="text" required maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" aria-describedby="e-b-marca" />
+          <p class="campo__error" id="e-b-marca" data-error="marca" hidden></p>
+        </div>
+        <div class="campo">
+          <label class="campo__etiqueta" for="b-modelo">Modelo</label>
+          <input class="campo__control" id="b-modelo" name="modelo" type="text" required maxlength="40" autocomplete="off" autocapitalize="words" spellcheck="false" aria-describedby="e-b-modelo" />
+          <p class="campo__error" id="e-b-modelo" data-error="modelo" hidden></p>
+        </div>
+        <div class="campo">
+          <label class="campo__etiqueta" for="b-anio">Año</label>
+          <input class="campo__control num" id="b-anio" name="anio" type="text" inputmode="numeric" required maxlength="4" pattern="[0-9]{4}" autocomplete="off" placeholder="2015" aria-describedby="e-b-anio" />
+          <p class="campo__error" id="e-b-anio" data-error="anio" hidden></p>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label class="campo__etiqueta" for="b-detalle">Detalle <span class="campo__opcional">(opcional)</span></label>
+        <textarea class="campo__control campo__control--area" id="b-detalle" name="detalle" rows="2" maxlength="280" placeholder="Referencia, número de parte, versión…"></textarea>
+      </div>
+
+      <label class="campo--foto">
+        <input type="checkbox" name="foto" />
+        <span>
+          <strong>Tengo una foto del repuesto</strong>
+          <span>La adjuntas en el chat de WhatsApp después de enviar el mensaje.</span>
+        </span>
+      </label>
+
+      <div class="form__envio">
+        <button class="btn form__boton busq__enviar" type="submit" data-enviar>
+          <Icono nombre="whatsapp" />
+          <span data-enviar-texto>Enviar búsqueda por WhatsApp</span>
+        </button>
+        <p class="form__estado" role="status" data-estado></p>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<style>
+  /* ---------- Pestaña fija ----------
+     Escritorio: pestaña vertical pegada al borde izquierdo (no tapa el contenido).
+     Celular: barra inferior junto al botón de WhatsApp (los dos forman una sola barra). */
+  .pestana-busqueda {
+    position: fixed;
+    z-index: 90;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--ambar);
+    color: var(--tinta);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      transform var(--t-media) var(--ease-out),
+      visibility 0s linear var(--t-media),
+      background-color var(--t-rapida) ease;
+    visibility: hidden;
+  }
+  .pestana-busqueda .icono {
+    width: 20px;
+    height: 20px;
+  }
+  .pestana-busqueda:hover {
+    background: var(--ambar-claro);
+  }
+  .pestana-busqueda:focus-visible {
+    outline: 2px solid var(--blanco);
+    outline-offset: -5px;
+  }
+  :global(html:not(.is-js)) .pestana-busqueda,
+  .pestana-busqueda[data-visible='true'] {
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+  .pestana-busqueda__corto {
+    display: none;
+  }
+
+  @media (max-width: 899.98px) {
+    .pestana-busqueda {
+      left: 0;
+      right: 60px;
+      bottom: 0;
+      justify-content: center;
+      min-height: calc(60px + env(safe-area-inset-bottom));
+      padding: 0 16px env(safe-area-inset-bottom);
+      box-shadow: 0 -8px 24px -12px rgb(0 0 0 / 0.45);
+      transform: translateY(110%);
+    }
+  }
+  @media (max-width: 379.98px) {
+    .pestana-busqueda__largo {
+      display: none;
+    }
+    .pestana-busqueda__corto {
+      display: inline;
+    }
+  }
+  @media (min-width: 900px) {
+    .pestana-busqueda {
+      left: 0;
+      top: 50%;
+      padding: 20px 13px;
+      writing-mode: vertical-rl;
+      box-shadow: var(--sombra-flotante);
+      /* Centrada en vertical y escondida a la izquierda hasta que toca mostrarla. */
+      transform: none;
+      translate: -110% -50%;
+      transition:
+        translate var(--t-media) var(--ease-out),
+        visibility 0s linear var(--t-media),
+        background-color var(--t-rapida) ease;
+    }
+    .pestana-busqueda[data-visible='true'] {
+      translate: 0 -50%;
+    }
+  }
+
+  /* ---------- Diálogo ---------- */
+  .busq {
+    /* Los acentos del formulario pasan a ámbar dentro de la búsqueda especial */
+    --azul-vivo: var(--ambar);
+    --azul-luz: var(--ambar);
+    --foco: var(--ambar);
+    width: min(100% - 24px, 620px);
+    max-width: none;
+    max-height: calc(100dvh - 24px);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--blanco);
+    overflow: visible;
+  }
+  .busq::backdrop {
+    background: rgb(8 9 11 / 0.72);
+  }
+  .busq__panel {
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--grafito);
+    border-top: 4px solid var(--ambar);
+    box-shadow: 0 30px 80px -30px rgb(0 0 0 / 0.8);
+  }
+  .busq__cabeza {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-5) var(--s-5) 0;
+  }
+  .busq__rotulo {
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ambar);
+  }
+  .busq__titulo {
+    margin-top: 6px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 106%;
+    font-size: var(--t-xl);
+    line-height: 1.02;
+    text-transform: uppercase;
+  }
+  .busq__cerrar {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: -6px -10px 0 0;
+    border: 0;
+    background: none;
+    color: var(--blanco);
+    cursor: pointer;
+  }
+  .busq__entrada {
+    padding: var(--s-3) var(--s-5) 0;
+    font-size: var(--t-sm);
+    color: var(--plata);
+  }
+  .busq__form {
+    margin: var(--s-4) 0 0;
+    border: 0;
+    border-top: 1px solid var(--acero);
+    padding: var(--s-5);
+    gap: var(--s-4);
+  }
+  .busq__form::before,
+  .busq__form::after {
+    display: none;
+  }
+  @media (min-width: 600px) {
+    .busq__fila {
+      grid-template-columns: 1fr 1fr 110px;
+    }
+  }
+  .busq__enviar {
+    background: var(--ambar);
+    color: var(--tinta);
+  }
+  .busq__enviar:hover {
+    background: var(--ambar-claro);
+  }
+  .busq__enviar[aria-busy='true'] {
+    background: #b77a10;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .busq[open] .busq__panel {
+      animation: busq-entra 420ms var(--ease-out);
+    }
+    @keyframes busq-entra {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+    }
+  }
+</style>

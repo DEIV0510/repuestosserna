@@ -1,10 +1,13 @@
 ---
-// Ficha de un repuesto: dibujo técnico, qué es, qué tener en cuenta y «Cotizar».
+// Ficha de un repuesto: foto real (si la tienda la entregó) o dibujo técnico, qué es, qué tener
+// en cuenta, datos de producto si existen (referencia, compatibilidad, precio) y «Cotizar».
 // «Cotizar» no abre WhatsApp: lleva al formulario de la misma página y lo deja lleno con
 // el sistema y el repuesto (src/scripts/solicitud.ts). Sin JS, solo baja al formulario.
 import Dibujo from './Dibujo.astro';
+import Foto from './Foto.astro';
 import Icono from './Icono.astro';
 import { sistema, textoBusqueda, textoDescripcion, type Repuesto } from '@/data/repuestos';
+import { fotoRepuesto } from '@/lib/media';
 
 interface Props {
   repuesto: Repuesto;
@@ -17,11 +20,24 @@ interface Props {
 const { repuesto: r, conSistema = false, nivel = 3 } = Astro.props;
 const s = sistema(r.sistema);
 const Titulo = nivel === 4 ? 'h4' : 'h3';
+const foto = fotoRepuesto(r.id);
+const precio = typeof r.precio === 'number' ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(r.precio) : null;
+const datosProducto = [
+  r.referencia && { clave: 'Referencia', valor: r.referencia },
+  r.compatibilidad && { clave: 'Para', valor: r.compatibilidad },
+  precio && { clave: 'Precio', valor: precio },
+].filter(Boolean) as { clave: string; valor: string }[];
 ---
 
 <article class="ficha" id={r.id} data-repuesto data-sistema={r.sistema} data-texto={textoBusqueda(r)} data-texto-desc={textoDescripcion(r)} aria-labelledby={`ficha-${r.id}`}>
-  <div class="ficha__plano">
-    <Dibujo id={r.dibujo} class="ficha__dibujo" />
+  <div class:list={['ficha__plano', { 'ficha__plano--foto': foto }]}>
+    {
+      foto ? (
+        <Foto id={foto} recorte="producto" class="ficha__foto" alt={`${r.nombre} en Serna Repuestos`} sizes="(min-width: 1024px) 300px, (min-width: 600px) 45vw, 112px" />
+      ) : (
+        <Dibujo id={r.dibujo} class="ficha__dibujo" />
+      )
+    }
   </div>
   <div class="ficha__cuerpo">
     {
@@ -38,6 +54,18 @@ const Titulo = nivel === 4 ? 'h4' : 'h3';
       <span class="ficha__consejo-marca" aria-hidden="true"></span>
       {r.consejo}
     </p>
+    {
+      datosProducto.length > 0 && (
+        <dl class="ficha__datos">
+          {datosProducto.map((d) => (
+            <div>
+              <dt>{d.clave}</dt>
+              <dd>{d.valor}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
     <a class="ficha__cotizar" href="#cotizar" data-cotizar data-tipo={s.tipo} data-nombre={r.nombre}>
       Cotizar este repuesto
       <span class="sr-only">: {r.nombre}</span>
@@ -70,6 +98,36 @@ const Titulo = nivel === 4 ? 'h4' : 'h3';
       var(--dib-fondo);
     border-bottom: 1px solid #dde1e6;
     overflow: hidden;
+  }
+  /* Foto real: entera, sin recortar, sobre fondo blanco (las fotos de producto varían). */
+  .ficha__plano--foto {
+    padding: 0;
+    background: var(--blanco);
+  }
+  .ficha__foto {
+    width: 100%;
+    height: 100%;
+    background: var(--blanco);
+  }
+  .ficha__foto :global(img) {
+    object-fit: contain;
+  }
+  .ficha__datos {
+    display: grid;
+    gap: 2px;
+    margin-top: 2px;
+    font-size: 0.8125rem;
+  }
+  .ficha__datos div {
+    display: flex;
+    gap: 8px;
+  }
+  .ficha__datos dt {
+    color: var(--tinta-2);
+  }
+  .ficha__datos dd {
+    font-weight: 600;
+    color: var(--tinta);
   }
   .ficha__dibujo {
     transition: transform var(--t-lenta) var(--ease-out);

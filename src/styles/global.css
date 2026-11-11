@@ -14,6 +14,9 @@
   --azul-profundo: #071c63;
   --azul-luz: #6b93ff; /* azul legible sobre grafito (5,9:1) */
   --plata: #d9dce0;
+  /* Búsqueda especial (repuestos difíciles de conseguir): color propio, pedido por el cliente */
+  --ambar: #f5a524;
+  --ambar-claro: #ffc552;
 
   /* Superficies */
   --grafito-0: #08090b;

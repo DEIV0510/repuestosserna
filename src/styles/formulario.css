@@ -1,0 +1,291 @@
+/* ==========================================================================
+   Formularios (cotización y búsqueda especial). Global porque los usan dos componentes:
+   Solicitud.astro y BusquedaEspecial.astro. Los acentos salen de --azul-vivo / --azul-luz /
+   --foco: la búsqueda especial los redefine en ámbar dentro de su diálogo.
+   ========================================================================== */
+
+/* ---------- Formulario ---------- */
+.form {
+  display: grid;
+  gap: var(--s-5);
+  padding: clamp(20px, 4vw, 40px);
+  background: var(--grafito-2);
+  border: 1px solid var(--acero);
+  position: relative;
+}
+/* Esquinas de registro: detalle de plano técnico. */
+.form::before,
+.form::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--azul-vivo);
+  border-style: solid;
+  pointer-events: none;
+}
+.form::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+.form::after {
+  right: -1px;
+  bottom: -1px;
+  border-width: 0 2px 2px 0;
+}
+.form__resumen {
+  padding: var(--s-3) var(--s-4);
+  border-left: 3px solid var(--error);
+  background: rgb(255 138 122 / 0.08);
+  color: var(--blanco);
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+.form__aviso {
+  padding: var(--s-3) var(--s-4);
+  border-left: 3px solid var(--azul-vivo);
+  background: rgb(31 85 255 / 0.12);
+  color: var(--blanco);
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+.form__fila {
+  display: grid;
+  gap: var(--s-5);
+}
+@media (min-width: 600px) {
+  .form__fila {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.campo {
+  display: grid;
+  gap: var(--s-2);
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+.campo__etiqueta {
+  padding: 0;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--blanco);
+}
+.campo__etiqueta .num {
+  margin-right: 6px;
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  color: var(--azul-luz);
+}
+.campo--tipo .campo__etiqueta {
+  margin-bottom: var(--s-2);
+}
+.campo__opcional {
+  font-weight: 400;
+  color: var(--titanio);
+}
+.campo__control {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid var(--acero);
+  border-radius: 0;
+  background: var(--grafito);
+  color: var(--blanco);
+  font-size: 1rem; /* ≥ 16 px: iOS no hace zoom al enfocar */
+  transition:
+    border-color var(--t-rapida) ease,
+    box-shadow var(--t-rapida) ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.campo__control::placeholder {
+  color: #6f7883;
+}
+.campo__control:hover {
+  border-color: #48515c;
+}
+.campo__control:focus-visible {
+  outline: none;
+  border-color: var(--azul-luz);
+  box-shadow: inset 0 -2px 0 var(--azul-vivo);
+}
+.campo__control[aria-invalid='true'] {
+  border-color: var(--error);
+}
+.campo__control--area {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.5;
+}
+.campo--anio {
+  max-width: 220px;
+}
+.campo__ayuda {
+  justify-self: end;
+  font-size: var(--t-xs);
+  color: var(--titanio);
+}
+.campo__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: var(--t-sm);
+  color: var(--error);
+}
+.campo__error::before {
+  content: '';
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 1 21h22L12 2Zm-1 7h2v6h-2V9Zm0 8h2v2h-2v-2Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+/* Tipo: control segmentado (radios reales, accesibles con teclado) */
+.opciones {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.opcion {
+  position: relative;
+  display: block;
+}
+.opcion input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.opcion__caja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 84px;
+  padding: 12px 6px;
+  border: 1px solid var(--acero);
+  background: var(--grafito);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  text-align: center;
+  color: var(--plata);
+  transition:
+    border-color var(--t-rapida) ease,
+    background-color var(--t-rapida) ease,
+    color var(--t-rapida) ease;
+  pointer-events: none;
+}
+.opcion__caja .icono {
+  width: 26px;
+  height: 26px;
+  color: var(--titanio);
+  transition: color var(--t-rapida) ease;
+}
+.opcion:hover .opcion__caja {
+  border-color: #48515c;
+  color: var(--blanco);
+}
+.opcion input:checked + .opcion__caja {
+  border-color: var(--azul-vivo);
+  background: rgb(0 58 249 / 0.16);
+  color: var(--blanco);
+  box-shadow: inset 0 -3px 0 var(--azul-vivo);
+}
+.opcion input:checked + .opcion__caja .icono {
+  color: var(--azul-luz);
+}
+.opcion input:focus-visible + .opcion__caja {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}
+.campo--tipo[aria-invalid='true'] .opcion__caja {
+  border-color: var(--error);
+}
+
+.form__envio {
+  display: grid;
+  gap: var(--s-3);
+  padding-top: var(--s-2);
+}
+.form__boton {
+  width: 100%;
+  --btn-alto: 58px;
+}
+.form__boton[aria-busy='true'] {
+  background: var(--azul-profundo);
+}
+.form__boton[aria-busy='true']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--azul-vivo);
+  transform-origin: 0 50%;
+  animation: form-cargando 700ms var(--ease-out) forwards;
+}
+@keyframes form-cargando {
+  from {
+    transform: scaleX(0);
+  }
+}
+.form__estado {
+  min-height: 1.5em;
+  font-size: var(--t-sm);
+  color: var(--plata);
+}
+.form__estado a {
+  color: var(--azul-luz);
+  font-weight: 600;
+}
+
+/* Casilla «Tengo una foto»: la foto se adjunta después en el chat de WhatsApp. */
+.campo--foto {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px dashed #48515c;
+  background: var(--grafito);
+  cursor: pointer;
+}
+.campo--foto input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--azul-vivo);
+  cursor: pointer;
+}
+.campo--foto strong {
+  display: block;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--blanco);
+}
+.campo--foto span span {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--titanio);
+}
+.campo--foto:has(input:checked) {
+  border-style: solid;
+  border-color: var(--azul-vivo);
+}
+.campo--foto:has(input:focus-visible) {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}

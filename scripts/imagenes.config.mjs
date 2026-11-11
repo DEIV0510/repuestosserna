@@ -12,11 +12,13 @@
 //   full → la foto entera (solo el hero de escritorio)
 //   card → encuadre para bloques, tarjetas y el hero en móvil
 
+import fs from 'node:fs';
+
 const VIDEO = '_material-cliente/fotogramas';
 const UNSPLASH = '_material-fotos/unsplash';
 const LIMPIO = { left: 0, top: 140, width: 720, height: 800 }; // sin marca de agua ni subtítulos
 
-export default [
+const fijas = [
   {
     id: 'hero-freno',
     src: `${UNSPLASH}/1760317890322-364a810cd4da.jpg`,
@@ -70,6 +72,25 @@ export default [
     crops: { card: LIMPIO },
   },
 ];
+
+// Fotos de los repuestos de la tienda: basta con dejar el archivo en
+// _material-cliente/repuestos/ con el mismo nombre del id de la ficha (src/data/repuestos.ts),
+// p. ej. amortiguadores.jpg, y correr «npm run images»: la ficha muestra la foto en lugar del
+// dibujo. Se usa la foto entera (sin recortar) y la ficha la encaja sin deformarla.
+const CARPETA_REPUESTOS = '_material-cliente/repuestos';
+const repuestos = fs.existsSync(CARPETA_REPUESTOS)
+  ? fs
+      .readdirSync(CARPETA_REPUESTOS)
+      .filter((f) => /.(jpe?g|png|webp)$/i.test(f))
+      .map((f) => ({
+        id: `rep-${f.replace(/.[^.]+$/, '').toLowerCase()}`,
+        src: `${CARPETA_REPUESTOS}/${f}`,
+        alt: '',
+        crops: { producto: null },
+      }))
+  : [];
+
+export default [...fijas, ...repuestos];
 
 // Anchos candidatos; se descartan los mayores que el recorte (nunca se amplía).
 // 840: pantallas de ~412 px con densidad 2 (el caso más común en Android).

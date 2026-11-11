@@ -7,6 +7,11 @@ Páginas: portada (`/`), catálogo con buscador (`/repuestos/`) y una página po
 - **Astro 7** estático, sin librerías de interfaz. Un único módulo de JavaScript (~7 KB) para cabecera, menú, apariciones, formulario y analítica.
 - Contenido y datos de la empresa: `src/lib/contacto.ts` (única fuente) y `src/lib/whatsapp.ts` (mensajes).
 - Catálogo: `src/data/repuestos.ts` (sistemas y fichas) y `src/data/dibujos.ts` (dibujos técnicos SVG). El buscador vive en `src/scripts/catalogo.ts`.
+- Búsqueda especial (repuestos fuera del catálogo, en ámbar): `BusquedaEspecial.astro` (pestaña + diálogo) y `SeccionBusqueda.astro` (franja). Los dos formularios comparten `src/scripts/solicitud.ts` y `src/styles/formulario.css`.
+
+## Fotos de los repuestos
+
+Deja cada foto en `_material-cliente/repuestos/` con el id de su ficha (`amortiguadores.jpg`, `pastillas-de-freno.jpg`…) y corre `npm run images`: la ficha muestra la foto en lugar del dibujo. Referencia, compatibilidad y precio (opcionales) van en `src/data/repuestos.ts`.
 - Lo que falta confirmar: [`docs/PENDIENTES.md`](docs/PENDIENTES.md). Origen de cada foto: [`docs/CREDITOS-FOTOS.md`](docs/CREDITOS-FOTOS.md). Sistema de diseño: [`docs/DISENO.md`](docs/DISENO.md).
 
 ## Uso

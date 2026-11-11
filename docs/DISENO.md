@@ -23,6 +23,7 @@ Concepto: **ingeniería, precisión y movimiento**. El lenguaje sale del propio 
 | `--acero` | `#2c333b` | Líneas sobre oscuro |
 | `--titanio` | `#98a1ab` | Texto secundario sobre oscuro |
 | `--plata` | `#d9dce0` | Texto de apoyo sobre oscuro |
+| `--ambar` / `--ambar-claro` | `#f5a524` / `#ffc552` | Solo la búsqueda especial (repuestos difíciles de conseguir): color propio pedido por el cliente; texto en `--tinta` (9,5:1) |
 | `--claro` | `#f3f4f6` | Superficie clara |
 | `--tinta` / `--tinta-2` | `#0d1014` / `#4a525c` | Texto sobre claro |
 

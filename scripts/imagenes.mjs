@@ -11,7 +11,7 @@ import todas, { WIDTHS } from './imagenes.config.mjs';
 
 const OUT = 'public/img';
 const MANIFEST = 'src/data/media.json';
-const MAXIMO = { full: 2000, card: 1600 };
+const MAXIMO = { full: 2000, card: 1600, producto: 1080 };
 const solo = process.argv.slice(2);
 const fotos = solo.length ? todas.filter((f) => solo.includes(f.id)) : todas;
 if (solo.length) {
@@ -46,16 +46,19 @@ let total = 0;
 for (const foto of fotos) {
   const entry = { alt: foto.alt, crops: {} };
   for (const [nombre, c] of Object.entries(foto.crops)) {
-    // Buffer intermedio: recorte exacto en sRGB, sin metadatos.
-    const base = await sharp(foto.src).extract(c).toColorspace('srgb').png().toBuffer();
+    // Buffer intermedio: recorte exacto en sRGB, sin metadatos. Sin recorte (fotos de
+    // repuestos) se usa la foto entera, girada según su EXIF (fotos de celular).
+    const origen = c ? sharp(foto.src).extract(c) : sharp(foto.src).rotate();
+    const base = await origen.toColorspace('srgb').png().toBuffer();
+    const { width: ancho } = await sharp(base).metadata();
     const bg = await bordeMediano(base);
-    // Tope por uso: el hero de escritorio se ve a ≤ 1000 px CSS y los bloques a ≤ 800 px CSS;
-    // con pantallas 2x bastan 2000 y 1600 px.
-    const tope = Math.min(c.width, MAXIMO[nombre] ?? c.width);
+    // Tope por uso: el hero de escritorio se ve a ≤ 1000 px CSS, los bloques a ≤ 800 px CSS y
+    // las fotos de repuestos a ≤ 520 px CSS; con pantallas 2x bastan 2000, 1600 y 1080 px.
+    const tope = Math.min(ancho, MAXIMO[nombre] ?? ancho);
     const anchos = [...WIDTHS.filter((w) => w < tope), tope];
     const set = { avif: [], webp: [] };
     for (const w of anchos) {
-      const reduce = w < c.width;
+      const reduce = w < ancho;
       let img = sharp(base).resize({ width: w, withoutEnlargement: true });
       if (reduce) img = img.sharpen({ sigma: 0.6 });
       const avif = await img.clone().avif({ quality: w > 900 ? 58 : 54, effort: 6 }).toBuffer();

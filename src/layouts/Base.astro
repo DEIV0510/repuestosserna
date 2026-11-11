@@ -1,11 +1,13 @@
 ---
 import '@/styles/fuentes.css';
 import '@/styles/global.css';
+import '@/styles/formulario.css';
 import fuentes from '@/data/fuentes.json';
 import Iconos from '@/components/Iconos.astro';
 import Cabecera from '@/components/Cabecera.astro';
 import Pie from '@/components/Pie.astro';
 import WhatsAppFlotante from '@/components/WhatsAppFlotante.astro';
+import BusquedaEspecial from '@/components/BusquedaEspecial.astro';
 import Carga from '@/components/Carga.astro';
 import { DIRECCION, INSTAGRAM, MARCA, WHATSAPP_E164, FACEBOOK, MAPS_INDICACIONES } from '@/lib/contacto';
 import { logoData, pictureData } from '@/lib/media';
@@ -194,6 +196,7 @@ const logoCarga = logoData('principal');
     </main>
     <Pie />
     <WhatsAppFlotante />
+    <BusquedaEspecial />
     <script>
       import '@/scripts/app';
     </script>

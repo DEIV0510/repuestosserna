@@ -4,7 +4,7 @@
 import { pictureData, type MediaId, type Recorte } from '@/lib/media';
 
 interface Props {
-  id: MediaId;
+  id: MediaId | string;
   sizes: string;
   recorte?: Recorte;
   alt?: string;
